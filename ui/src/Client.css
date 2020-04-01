@@ -1,0 +1,57 @@
+.Client {
+  text-align: center;
+  width: 700px;
+  max-width: calc(100vw - 2rem);
+  margin: 0 auto 1rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.Client:hover {
+  border-style: outset;
+  border-color:lavender;
+}
+
+.Speed-fast {
+  background-color: whitesmoke;
+}
+
+.Speed-medium {
+  background-color: beige;
+}
+
+.Speed-sluggish {
+  background-color: bisque;
+}
+
+.Speed-slow {
+  background-color: coral;
+}
+
+.Speed-snail {
+  background-color: crimson;
+}
+
+.Blocked {
+  border-style: double;
+  border-color: darkmagenta;
+}
+
+.ClientId,
+.ClientCPU,
+.Timestamp,
+.Checkbox {
+  font-size: 1.25rem;
+  font-weight: bold;
+  display: inline;
+}
+input.ClientCPU {
+  width: 3.5rem;
+  height: 1.5rem;
+  display: inline;
+}
+
+.Timestamp {
+  font-family: "Courier New", Courier, monospace;
+}
