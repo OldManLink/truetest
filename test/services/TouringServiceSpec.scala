@@ -1,8 +1,6 @@
 package services
 
-import java.time.LocalDateTime
-
-import models.ClientResponse
+import models.{Tour, TourRequest, TourResponse}
 import org.junit.runner.RunWith
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -11,15 +9,16 @@ import org.specs2.runner.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class TouringServiceSpec extends Specification with Mockito {
 
-  "TouringService" should {
-    val now = LocalDateTime.now
+  val tours: Seq[Tour] = Seq(Tour(0, "Tour 0", Seq((2, 2),(4, 2))))
 
-    "create a client" in {
+  "TouringService" should {
+
+    "get the tours for a board" in {
       val cpuService = new TouringServiceImpl()
 
-      val newClientId = cpuService.createClient("Foobar")
+      val tourResponse = cpuService.getTours(TourRequest((5, 5), (2, 2)))
 
-      newClientId must beEqualTo(ClientResponse(LocalDateTime.now.getDayOfYear))
+      tourResponse must beEqualTo(TourResponse(tours))
     }
   }
 }

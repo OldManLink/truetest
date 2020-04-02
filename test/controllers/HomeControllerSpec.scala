@@ -1,6 +1,6 @@
 package controllers
 
-import models.{ClientResponse, Summary}
+import models.{BoardDescription, Row, Square, SquareDescription, Summary, Tour, TourRequest, TourResponse}
 import org.junit.runner.RunWith
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -15,6 +15,7 @@ import services.TouringService
 class HomeControllerSpec extends Specification with Mockito {
 
   val titleJson: JsValue = Json.toJson(Summary("Truecaller Touring Test!"))
+  val tourRequest: TourRequest = TourRequest(BoardDescription(1, 1), SquareDescription(0,0))
 
   "HomeController GET" should {
 
@@ -48,20 +49,26 @@ class HomeControllerSpec extends Specification with Mockito {
       resultJson must beEqualTo(titleJson)
     }
 
-    "create a new client" in new WithApplication {
-      val cpuService = mock[TouringService]
-      cpuService.createClient(anyString) returns ClientResponse(42)
-      val controller = new HomeController(stubControllerComponents(), cpuService)
-      val newClientResponse = controller.newClientId().apply(getRequest("/newClientId"))
+    "get the tours for a tourRequest" in new WithApplication {
+      val touringService = mock[TouringService]
+      val tourResponse: TourResponse = TourResponse(Seq(Tour(42, "Foo", Seq((4, 2)))))
+      touringService.getTours(any[TourRequest]()) returns tourResponse
+      val controller = new HomeController(stubControllerComponents(), touringService)
 
-      status(newClientResponse) must beEqualTo(OK)
-      contentType(newClientResponse) must beSome("application/json")
-      val resultJson = contentAsJson(newClientResponse)
-      resultJson must beEqualTo(Json.toJson(ClientResponse(42)))
-      there was one(cpuService).createClient("Foobar")
+      val getTours = controller.getTours().apply(
+        postJsonRequest("/getTours").withJsonBody(Json.toJson(tourRequest))
+      )
+
+      status(getTours) must beEqualTo(OK)
+      contentType(getTours) must beSome("application/json")
+      val resultJson = contentAsJson(getTours)
+      resultJson must beEqualTo(Json.toJson(tourResponse))
+      there was one(touringService).getTours(any[TourRequest]())
     }
   }
 
   private def getRequest(uri: String): FakeRequest[AnyContentAsEmpty.type] = FakeRequest(GET, uri).withHeaders("User-Agent" -> "Foobar")
 
+  private def postJsonRequest(uri: String): FakeRequest[AnyContentAsEmpty.type] = FakeRequest(POST, uri)
+    .withHeaders("User-Agent" -> "Foobar", "Content-Type" -> "application/json")
 }

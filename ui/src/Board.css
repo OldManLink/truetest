@@ -1,0 +1,15 @@
+.Board {
+  text-align: center;
+  width: 700px;
+  max-width: calc(100vw - 2rem);
+  margin: 0 auto 1rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border-color: bisque;
+  border-style: outset;
+}
+
+.Board:hover {
+  border-style: outset;
+  border-color:lavender;
+}

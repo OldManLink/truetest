@@ -1,0 +1,32 @@
+.Square {
+  min-width: 42px;
+  min-height: 42px;
+  border-style: groove;
+  border-color: beige;
+  display: inline-block;
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+  font-size: x-large;
+}
+
+.Square-Odd {
+  background-color: lightgray;
+}
+
+.Square-Even {
+  background-color: whitesmoke;
+}
+
+.Square:hover {
+  border-style: outset;
+  border-color: paleturquoise;
+  cursor: pointer;
+}
+
+.Square-Visited.Square-Even {
+  background-color: darkseagreen;
+}
+
+.Square-Visited.Square-Odd {
+  background-color: darkgreen;
+}

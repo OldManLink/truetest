@@ -1,0 +1,19 @@
+.Tour {
+  text-align: center;
+  width: 420px;
+  max-width: calc(100vw - 2rem);
+  margin: 0.5rem auto 1rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  background-color: whitesmoke;
+}
+
+.Played {
+  background-color: paleturquoise;
+}
+
+.Tour:hover {
+  border-style: outset;
+  border-color:lavender;
+}

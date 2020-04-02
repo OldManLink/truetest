@@ -1,7 +1,7 @@
 package controllers
 
 import javax.inject._
-import models.Summary
+import models.{Summary, TourRequest}
 import play.api.libs.json.Json
 import play.api.mvc._
 import services.TouringService
@@ -13,8 +13,9 @@ class HomeController @Inject()(cc: ControllerComponents, cpuService: TouringServ
     Ok(Json.toJson(Summary("Truecaller Touring Test!")))
   }
 
-  def newClientId: Action[AnyContent] = Action {
+  def getTours: Action[AnyContent] = Action {
     request =>
-      Ok(Json.toJson(cpuService.createClient(request.headers("User-Agent"))))
+      val tourRequest = request.body.asJson.get.as[TourRequest]
+      Ok(Json.toJson(cpuService.getTours(tourRequest)))
   }
 }

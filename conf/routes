@@ -7,7 +7,7 @@ GET     /                           controllers.FrontendController.index()
 
 # API
 GET     /api/summary                controllers.HomeController.appSummary
-GET     /api/newid                  controllers.HomeController.newClientId
+POST    /api/tours                  controllers.HomeController.getTours
 
 # Serve static assets under public directory
 GET     /*file                      controllers.FrontendController.assetOrDefault(file)

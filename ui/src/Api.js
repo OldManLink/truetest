@@ -9,35 +9,15 @@ function getSummary(cb) {
 }
 
 /* eslint-disable no-undef */
-function newClientId(cb) {
-  return fetch('/api/newid', {
-    accept: "application/json"
-  })
-    .then(checkStatus)
-    .then(parseJSON)
-    .then(cb);
-}
-
-/* eslint-disable no-undef */
-function reportCpu(report, cb) {
-  return fetch('/api/report', {
+function getTours(request, cb) {
+  return fetch('/api/tours', {
     method: 'POST',
     headers: {
       'Accept': "application/json",
       'Content-Type': 'application/json',
       'Csrf-Token' :'nocheck'
     },
-    body: JSON.stringify(report)
-  })
-    .then(checkStatus)
-    .then(parseJSON)
-    .then(cb);
-}
-
-/* eslint-disable no-undef */
-function getCpuAverage(client, cb) {
-  return fetch('/api/cpu/' + client.id, {
-    accept: "application/json"
+    body: JSON.stringify(request)
   })
     .then(checkStatus)
     .then(parseJSON)
@@ -59,5 +39,5 @@ function parseJSON(response) {
   return response.json();
 }
 
-const Api = { getSummary, newClientId, reportCpu, getCpuAverage };
+const Api = { getSummary, getTours };
 export default Api;
