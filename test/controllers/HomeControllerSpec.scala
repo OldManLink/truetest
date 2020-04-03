@@ -1,5 +1,6 @@
 package controllers
 
+import helpers.Move.O
 import models.{BoardDescription, Row, Square, SquareDescription, Summary, Tour, TourRequest, TourResponse}
 import org.junit.runner.RunWith
 import org.specs2.mock.Mockito
@@ -51,7 +52,7 @@ class HomeControllerSpec extends Specification with Mockito {
 
     "get the tours for a tourRequest" in new WithApplication {
       val touringService = mock[TouringService]
-      val tourResponse: TourResponse = TourResponse(Seq(Tour(42, "Foo", Seq((4, 2)))))
+      val tourResponse: TourResponse = TourResponse(Seq(Tour(42, 0, 0, List(O))))
       touringService.getTours(any[TourRequest]()) returns tourResponse
       val controller = new HomeController(stubControllerComponents(), touringService)
 
