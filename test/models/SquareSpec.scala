@@ -13,17 +13,15 @@ class SquareSpec extends Specification {
   "Square" should {
 
     "be created from SquareDescription" in {
-      //noinspection RedundantDefaultArgument
-      Square(SquareDescription(1, 1)) must beEqualTo(Square(1, 1, visited = false))
+      Square(SquareDescription(1, 1)) must beEqualTo(Square(1, 1))
     }
 
-    "be marked as visited" in {
-      Square(0,0).asVisited must beEqualTo(Square(0, 0, visited = true))
-    }
-
-    "correctly identify matching position" in {
-      Square(0,0).asVisited.samePosition(Square(0,0)) must beTrue
-      Square(0,1).samePosition(Square(0,0)) must beFalse
+    "correctly return board index" in {
+      Square(0,0).index(Board(BoardDescription(1,1))) mustEqual(0)
+      Square(3,4).index(Board(BoardDescription(4,5))) mustEqual(19)
+      Square(1,2).index(Board(BoardDescription(4,5))) mustEqual(7)
+      Square(5,2).index(Board(BoardDescription(8,8))) mustEqual(42)
+      Square(9,9).index(Board(BoardDescription(10,10))) mustEqual(99)
     }
 
     "correctly list all possible and impossible steps" in {
@@ -50,24 +48,13 @@ class SquareSpec extends Specification {
         )
     }
 
-    "correctly list all unvisited steps" in {
-      val board = Board(BoardDescription(10, 10))
-        .visit(Square(3,4))
-        .visit(Square(3,0))
-      Square(1, 2).unvisitedSteps(board) mustEqual
-        Seq(
-          Step(Some(Square(4, 2)),N),
-          Step(Some(Square(1, 5)),E),
-        )
-    }
-
     "deserialise from Json" in {
-      val square = Json.fromJson[Square](Json.parse("""{"rowIndex":0,"columnIndex":0,"visited":false}"""))
+      val square = Json.fromJson[Square](Json.parse("""{"rowIndex":0,"columnIndex":0}"""))
       square.get mustEqual Square(0,0)
     }
 
     "serialise to Json" in {
-      Json.toJson(Square(0,0)).toString() must beEqualTo("""{"rowIndex":0,"columnIndex":0,"visited":false}""")
+      Json.toJson(Square(0,0)).toString() must beEqualTo("""{"rowIndex":0,"columnIndex":0}""")
     }
   }
 }

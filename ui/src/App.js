@@ -9,7 +9,7 @@ export default class App extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {title: '', tours: [], rows: 10, columns: 10, lastTour: undefined};
+    this.state = {title: '', tours: [], rows: 5, cols: 5, maxTours: 5, lastTour: undefined};
     this.getTours = this.getTours.bind(this);
     this.playTourHandler = this.playTourHandler.bind(this);
   }
@@ -34,12 +34,13 @@ export default class App extends Component {
     const request = {
       board: {
         rows: this.state.rows,
-        columns: this.state.columns
+        columns: this.state.cols
       },
       startingSquare: {
         row: value.row,
         column: value.column
-      }
+      },
+      max: this.state.maxTours
     };
     this.setState({tours: []});
     this.refs.board.unPlayTour(this.state.lastTour)
@@ -61,8 +62,8 @@ export default class App extends Component {
             : "Welcome to the " + this.state.title
         }</h1></header>
         <Board ref="board"
-               width={10}
-               height={10}
+               rows={this.state.rows}
+               cols={this.state.cols}
                touringCallback={this.getTours}/>
         {this.state.tours.length === 0
           ? (
@@ -70,6 +71,7 @@ export default class App extends Component {
           )
           : (
             <div>
+              <br/>"[Click any Tour to (re)play it)]"<br/>
               <ul>
                 {this.state.tours.map(tour =>
                   <Tour key={"Tour-" + tour.id}
@@ -77,7 +79,6 @@ export default class App extends Component {
                         touringCallback={this.playTourHandler}/>)
                 }
               </ul>
-              <br/>"[Click any Tour to (re)play it)]"
             </div>)
         }
       </div>

@@ -4,19 +4,18 @@ import helpers.Move
 import helpers.Step
 import play.api.libs.json.{Json, OFormat}
 
-case class Square(rowIndex: Int, columnIndex: Int, visited: Boolean = false) {
-
-  def samePosition(square: Square): Boolean = this.rowIndex == square.rowIndex && this.columnIndex == square.columnIndex
+case class Square(rowIndex: Int, columnIndex: Int) {
 
   def allSteps(board: Board): List[Step] = {
     Move.validMoves.map(move => move.destination(board, this)).toList
   }
 
-  def possibleSteps(board: Board): List[Step] = allSteps(board).filter(_.legal)
+  def possibleSteps(board: Board): List[Step] = {
+    val all = allSteps(board).filter(_.legal)
+    all
+  }
 
-  def unvisitedSteps(board: Board): List[Step] = possibleSteps(board).filterNot(_.square.exists(_.visited))
-
-  def asVisited: Square = copy(visited = true)
+  def index(board: Board): Int = rowIndex * board.columnSize + columnIndex
 }
 
 object Square {

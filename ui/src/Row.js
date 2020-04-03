@@ -23,7 +23,7 @@ export default class Row extends Component {
     return (
       <div className="Row">
         <ul>
-          {Utils.range(0, this.props.width - 1)
+          {Utils.range(0, this.props.cols - 1)
             .map(index => <Square
               key={"Square" + index + this.props.index}
               ref={"col" + index}

@@ -13,7 +13,7 @@ class TouringServiceImpl extends TouringService with Logging {
 
   override def getTours(tourRequest: TourRequest): TourResponse = {
     val helper = TouringHelper(Board(tourRequest.board), Square(tourRequest.startingSquare))
-    val tours = helper.getTours
+    val tours = helper.getTours(tourRequest.max)
 
     logger.info(s"Created ${tours.size} tours for ${Json.toJson(tourRequest)}")
     TourResponse(tours)

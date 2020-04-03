@@ -6,7 +6,7 @@
 > 
 > Implemented in Play/Scala on the backend and ReactJS on the frontend. Based on the excellent [Scala Play React Seed](http://bit.ly/2A1AzEq) .
  
-![Touring](https://github.com/OldManLink/truetest/blob/master/docs/01_Touring.png)
+![PlayingTour](https://github.com/OldManLink/truetest/blob/master/docs/02_PlayingTour.png)
 
 ## How to build it?
 
@@ -88,15 +88,27 @@ sbt run
 ```
 This will open your browser on the address `http://localhost:3000/` with the following view:
 
-![EmptyBoard](https://github.com/OldManLink/hivetest/blob/master/docs/00_EmptyBoard.png)
+![EmptyBoard](https://github.com/OldManLink/truetest/blob/master/docs/00_EmptyBoard.png)
 
-The system is quite robust, since it is written in Scala. 
+The board dimensions can be altered by editing `ui/src/App.js` line 12, see the `rows` and `cols` parameters.
+
+Click on any board square to fetch a list of possible tours from that square. The list will look like this:
+
+![ToursList](https://github.com/OldManLink/truetest/blob/master/docs/01_ToursList.png)
+
+The number of Tours fetched is also configured in the same place as the board dimensions, see the `maxTours` parameter.
+
+Click on any Tour to se it playback on the board. As each square is visited it tuns green. 
+
+![PlayingTour](https://github.com/OldManLink/truetest/blob/master/docs/02_PlayingTour.png)
+
+The system is quite robust, since it is written in Scala, but I have apparently missed some detail in my work, as any board sizes bigger that 5x5 cause my machine to crash with an out of memory error. Instead of spending too much time investigating that now, I'm sending the assignment as is, so that you can see the almost-finished app while I finish debugging that last detail.
 
 ### Stop the server and frontend
 To stop the client smoothly, simply reload the page on your browser. React will smoothly unmount and terminate any running tours. Once this is done, press `<Ctrl> C` in the console to terminate the backend and frontend services.
 
 ## Further discussion points
-I'm tempted to put all my thoughts here in the documentation, but then I would never get this sent off, so I'll have to stop here. If you want to know more, please call me back for a second interview!
+I'm tempted to put all my thoughts here in the documentation, but then I would never get this sent off, so I'll have to stop here, then look at the aforementioned memory issue. If you want to know more, please call me back for a second interview!
 
 
 ## License

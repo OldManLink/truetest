@@ -6,7 +6,7 @@ export default class Board extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {width: props.width, height: props.height};
+    this.state = {rows: props.rows, cols: props.cols};
     this.getTours = this.getTours.bind(this);
   }
 
@@ -25,7 +25,7 @@ export default class Board extends Component {
       ? {...tour, squares: [...tour.squares].reverse().slice(0,-1)}
       : undefined;
     return reverseTour
-      ? this.basicTour(tour, false, 50).then(Utils.sleep(150))
+      ? this.basicTour(tour, false, 5).then(Utils.sleep(1000))
       : Promise.resolve()
   }
 
@@ -42,13 +42,13 @@ export default class Board extends Component {
     return (
       <div className="Board">
         <ul>
-          {Utils.range(0, this.state.height - 1).reverse()
+          {Utils.range(0, this.state.rows - 1).reverse()
             .map(rowIndex =>
               <Row key={"Row-" + rowIndex}
                    ref={"row" + rowIndex}
                    touringCallback={this.getTours}
                    index={rowIndex}
-                   width={this.state.width}/>
+                   cols={this.state.cols}/>
             )}
         </ul>
       </div>

@@ -4,7 +4,7 @@ import models.{Board, Square}
 import play.api.libs.json._
 import play.api.libs.json.JsError.{apply => JsError}
 
-sealed abstract class Move(val code: String, val x: Int, val y: Int) extends Move.Value {
+sealed abstract class Move(val code: String, val y: Int, val x: Int) extends Move.Value {
 
   def destination(board: Board, square: Square): Step = {
     Step(board.getSquare(square.rowIndex + y, square.columnIndex + x), this)
@@ -28,12 +28,12 @@ object Move extends Enum[Move] {
   }
 
   val O:  Move = new Move("O",  0,  0){}
-  val N:  Move = new Move("N",  0,  3){}
+  val N:  Move = new Move("N",  3,  0){}
   val NE: Move = new Move("NE", 2,  2){}
-  val E:  Move = new Move("E",  3,  0){}
-  val SE: Move = new Move("SE", 2, -2){}
-  val S:  Move = new Move("S",  0, -3){}
+  val E:  Move = new Move("E",  0,  3){}
+  val SE: Move = new Move("SE",-2,  2){}
+  val S:  Move = new Move("S", -3,  0){}
   val SW: Move = new Move("SW",-2, -2){}
-  val W:  Move = new Move("W", -3,  0){}
-  val NW: Move = new Move("NW",-2,  2){}
-}
+  val W:  Move = new Move("W",  0, -3){}
+  val NW: Move = new Move("NW", 2, -2){}
+}                                  

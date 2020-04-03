@@ -16,7 +16,7 @@ import services.TouringService
 class HomeControllerSpec extends Specification with Mockito {
 
   val titleJson: JsValue = Json.toJson(Summary("Truecaller Touring Test!"))
-  val tourRequest: TourRequest = TourRequest(BoardDescription(1, 1), SquareDescription(0,0))
+  val tourRequest: TourRequest = TourRequest(BoardDescription(1, 1), SquareDescription(0,0), 5)
 
   "HomeController GET" should {
 
