@@ -1,32 +1,34 @@
 package models
 
+import helpers.ObjectFactory.{SquareResolver, getOptimisedBoard}
+import helpers.{Move, Step}
 import org.junit.runner.RunWith
+import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
-import play.api.libs.json.Json
+import utils.SquareTesting
 
 @RunWith(classOf[JUnitRunner])
-class RowSpec extends Specification {
+class RowSpec extends Specification with SquareTesting with Mockito {
+
+  val resolver: SquareResolver = mock[SquareResolver]
+  val blockedSquare: Square = blocked(0, 0, 0)
+  val unblockedSquare: Square = Square(1, 1, 1, Seq(Step(Move.NW, resolver)))
 
   "Row" should {
 
     "correctly return requested squares that exist" in {
-      Row(0, Seq(Square(4,0),Square(4,1),Square(4,2),Square(4,3),Square(4,4)))
-        .getSquare(2) must beSome(Square(4, 2))
+      val testBoard = getOptimisedBoard(TourRequest((5, 5), (0, 0), 42))
+      testBoard.rows(4).getSquare(2).map(asBlocked) must beSome(Square(4, 2, 22, Nil))
     }
 
     "correctly fail to return non-existent squares" in {
-      Row(0, Seq(Square(4,0),Square(4,1),Square(4,2),Square(4,3),Square(4,4)))
-        .getSquare(5) must beNone
+      val testBoard = getOptimisedBoard(TourRequest((5, 5), (0, 0), 42))
+      testBoard.rows(3).getSquare(5) must beNone
     }
 
-    "deserialise from Json" in {
-      val row = Json.fromJson[Row](Json.parse("""{"index":0,"squares":[{"rowIndex":0,"columnIndex":0}]}"""))
-      row.get mustEqual Row(0, Seq(Square(0,0)))
-    }
-
-    "serialise to Json" in {
-      Json.toJson(Row(0, Seq(Square(0,0)))).toString() must beEqualTo("""{"index":0,"squares":[{"rowIndex":0,"columnIndex":0}]}""")
+    "correctly answer if it has blockedSquares" in {
+      Row(42, Seq(blockedSquare, blockedSquare)).hasBlockedSquares must beTrue
     }
   }
 }

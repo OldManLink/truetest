@@ -1,9 +1,15 @@
 package helpers
 
+import helpers.ObjectFactory.SquareResolver
 import models.Square
 
-case class Step(square: Option[Square], move: Move) {
+case class Step(move: Move, squareResolver: SquareResolver) {
 
-  def legal: Boolean = square.isDefined
+  def unVisitedSize(visited: Seq[Int]): Int = square.possibleSteps
+    .filterNot(step => visited.contains(step.square.boardIndex)).size
 
+  lazy val square: Square = squareResolver.resolve
+
+  @Override
+  override def toString: String = s"{$move, ${squareResolver}}"
 }

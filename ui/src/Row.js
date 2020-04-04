@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import Square from "./Square";
 import Utils from "./Utils";
 
+import './Row.css';
 export default class Row extends Component {
 
   constructor(props) {
@@ -22,16 +23,14 @@ export default class Row extends Component {
   render() {
     return (
       <div className="Row">
-        <ul>
-          {Utils.range(0, this.props.cols - 1)
-            .map(index => <Square
-              key={"Square" + index + this.props.index}
-              ref={"col" + index}
-              row={this.props.index}
-              column={index}
-              touringCallback={this.getTours}/>
-            )}
-        </ul>
+        {Utils.range(0, this.props.cols - 1)
+          .map(index => <Square
+            key={"Square" + index + this.props.index}
+            ref={"col" + index}
+            row={this.props.index}
+            column={index}
+            touringCallback={this.getTours}/>
+          )}
       </div>
     );
   }

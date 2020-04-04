@@ -1,13 +1,13 @@
 package models
 
-import play.api.libs.json.{Json, OFormat}
-
 case class Row(index: Int, squares: Seq[Square]) {
 
   def getSquare(column: Int): Option[Square] = squares.find(_.columnIndex == column)
-}
 
-object Row {
+  def hasBlockedSquares: Boolean = squares.exists(_.isBlocked)
 
-  implicit val rowFormat: OFormat[Row] = Json.format[Row]
+  def hasUnblockedSquares: Boolean = squares.exists(!_.isBlocked)
+
+  @Override
+  override def toString: String = s"""Row: {index: $index, squares: ${squares.mkString("[\n    ", ",\n    ", "\n    ]")}\n  }"""
 }

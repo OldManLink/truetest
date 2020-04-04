@@ -1,36 +1,30 @@
 package models
 
+import helpers.ObjectFactory.getOptimisedBoard
 import org.junit.runner.RunWith
 import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
-import play.api.libs.json.Json
+import utils.SquareTesting
 
 @RunWith(classOf[JUnitRunner])
-class BoardSpec extends Specification {
+class BoardSpec extends Specification with SquareTesting {
 
   "Board" should {
 
-    "be created from BoardDescription" in {
-      Board(BoardDescription(1, 1)) must beEqualTo(Board(Seq(Row(0, Seq(Square(0, 0))))))
-      Board(BoardDescription(2, 1)) must beEqualTo(Board(Seq(Row(0, Seq(Square(0, 0))),Row(1, Seq(Square(1, 0))))))
-      Board(BoardDescription(1, 2)) must beEqualTo(Board(Seq(Row(0, Seq(Square(0, 0),Square(0, 1))))))
-    }
-
     "correctly return requested squares that exist" in {
-      Board(BoardDescription(10, 10)).getSquare(5, 5) must beSome(Square(5, 5))
+      getOptimisedBoard(TourRequest((10, 10), (4, 2), 42))
+        .getSquare(4, 2).map(asBlocked) must beSome(Square(4, 2, 42, Nil))
     }
 
     "correctly fail to return non-existent squares" in {
-      Board(BoardDescription(5, 5)).getSquare(5, 5) must beNone
+      getOptimisedBoard(TourRequest((5, 5), (4, 2), 42))
+        .getSquare(5, 5) must beNone
     }
 
-    "deserialise from Json" in {
-      val board = Json.fromJson[Board](Json.parse("""{"rows":[{"index":0,"squares":[{"rowIndex":0,"columnIndex":0}]}]}"""))
-      board.get mustEqual(Board(BoardDescription(1, 1)))
-    }
-
-    "serialise to Json" in {
-      Json.toJson(Board(BoardDescription(1, 1))).toString() must beEqualTo("""{"rows":[{"index":0,"squares":[{"rowIndex":0,"columnIndex":0}]}]}""")
+    "correctly return its squareCount" in {
+      Board.EMPTY.squareCount must beEqualTo(0)
+      getOptimisedBoard(TourRequest((5, 5), (4, 2), 42)).squareCount must beEqualTo(25)
+      getOptimisedBoard(TourRequest((10, 10), (4, 2), 42)).squareCount must beEqualTo(100)
     }
   }
 }

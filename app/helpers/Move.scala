@@ -1,28 +1,24 @@
 package helpers
 
-import models.{Board, Square}
 import play.api.libs.json._
 import play.api.libs.json.JsError.{apply => JsError}
 
 sealed abstract class Move(val code: String, val y: Int, val x: Int) extends Move.Value {
 
-  def destination(board: Board, square: Square): Step = {
-    Step(board.getSquare(square.rowIndex + y, square.columnIndex + x), this)
-  }
-
+  @Override
   override def toString: String = code
 }
 
 object Move extends Enum[Move] {
 
   def apply(code: String): Move = values.find(m => m.code == code).getOrElse(O)
-  def unapply(move: Move): String = move.code
+  def unapply(move: Move): Option[String] = Some(move.code)
   def validMoves: Seq[Move] = values.filterNot(_.equals(O))
 
   implicit object MoveFormat extends Format[Move] {
     def reads(json: JsValue): JsResult[Move] = json match {
       case JsString(code) => JsSuccess[Move](Move(code))
-      case _ => JsError(JsonValidationError(s"Invalid JSON input found"))
+      case _ => JsError(JsonValidationError("Invalid JSON input found"))
     }
     def writes(move: Move): JsValue = JsString(move.code)
   }

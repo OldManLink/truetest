@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import Utils from "./Utils";
 import Row from "./Row";
 
+import './Board.css';
 export default class Board extends Component {
 
   constructor(props) {

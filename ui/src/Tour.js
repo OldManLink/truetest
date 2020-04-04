@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import './Tour.css';
 
+import './Tour.css';
 export default class Tour extends Component {
 
   constructor(props) {

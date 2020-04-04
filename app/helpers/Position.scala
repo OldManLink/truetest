@@ -2,7 +2,7 @@ package helpers
 
 import models.{Board, Square, Tour}
 
-case class Position(square: Square, history: List[Move], visited: Set[Int] = Set.empty) {
+case class Position(square: Square, history: List[Move], visited: List[Int] = Nil) {
 
   def completes(board: Board): Boolean = {
     history.size == board.squareCount - 1

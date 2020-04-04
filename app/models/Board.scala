@@ -1,28 +1,20 @@
 package models
 
-import play.api.libs.json.{Json, OFormat}
-
 case class Board(rows: Seq[Row]) {
 
-  def columnSize: Int = rows.head.squares.size
+  def getSquare(row: Int, column: Int): Option[Square] = rows.find(_.index == row).flatMap(_.getSquare(column))
 
-  def squareCount: Int = rows.size * columnSize
+  lazy val squareCount: Int = rows.size * rows.headOption.map(_.squares.size).getOrElse(0)
 
-  def getSquare(row: Int, column: Int): Option[Square] = {
-    rows.find(_.index == row).flatMap(_.getSquare(column))
-  }
+  def hasBlockedSquares: Boolean = rows.exists(_.hasBlockedSquares)
+
+  def hasUnblockedSquares: Boolean = rows.exists(_.hasUnblockedSquares)
+
+@Override
+override def toString: String = s"""Board: {rows: ${rows.reverse.mkString("[\n  ", ",\n  ", "\n]")}}"""
 }
 
 object Board {
 
-  def apply(desc: BoardDescription): Board =
-    Board(
-      0 until desc.rows map { rowIndex =>
-        Row(
-          rowIndex, 0 until desc.columns map { colIndex =>
-            Square(SquareDescription(rowIndex, colIndex))
-          })
-      })
-
-  implicit val boardFormat: OFormat[Board] = Json.format[Board]
+  val EMPTY: Board = Board(Nil)
 }

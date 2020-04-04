@@ -1,28 +1,18 @@
 package models
 
-import helpers.Move
 import helpers.Step
-import play.api.libs.json.{Json, OFormat}
 
-case class Square(rowIndex: Int, columnIndex: Int) {
+case class Square(rowIndex: Int, columnIndex: Int, boardIndex: Int, possibleSteps: Seq[Step]) {
 
-  def allSteps(board: Board): List[Step] = {
-    Move.validMoves.map(move => move.destination(board, this)).toList
-  }
+  lazy val isBlocked: Boolean = possibleSteps == Nil
 
-  def possibleSteps(board: Board): List[Step] = {
-    val all = allSteps(board).filter(_.legal)
-    all
-  }
-
-  def index(board: Board): Int = rowIndex * board.columnSize + columnIndex
+  @Override
+  override def toString: String =
+    s"""{$rowIndex, $columnIndex, index: $boardIndex steps: ${
+      possibleSteps.mkString("[", ",", "]")}}"""
 }
 
 object Square {
 
-  def apply(desc: SquareDescription): Square = {
-    Square(desc.row, desc.column)
-  }
-
-  implicit val squareFormat: OFormat[Square] = Json.format[Square]
+  val ORIGIN: Square = Square(0, 0, 0, Nil)
 }

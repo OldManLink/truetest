@@ -15,3 +15,5 @@ libraryDependencies ++= Seq(
   specs2 % Test,
   "org.mockito" % "mockito-core" % "2.7.22" % Test
 )
+
+coverageExcludedPackages := ".*Reverse.*;.*Routes.*;"

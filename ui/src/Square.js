@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import './Square.css';
 
+import './Square.css';
 export default class Square extends Component {
 
   constructor(props) {

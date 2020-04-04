@@ -1,7 +1,7 @@
 package controllers
 
 import helpers.Move.O
-import models.{BoardDescription, Row, Square, SquareDescription, Summary, Tour, TourRequest, TourResponse}
+import models._
 import org.junit.runner.RunWith
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -16,9 +16,8 @@ import services.TouringService
 class HomeControllerSpec extends Specification with Mockito {
 
   val titleJson: JsValue = Json.toJson(Summary("Truecaller Touring Test!"))
-  val tourRequest: TourRequest = TourRequest(BoardDescription(1, 1), SquareDescription(0,0), 5)
 
-  "HomeController GET" should {
+  "HomeController" should {
 
     "render the appSummary resource from a new instance of controller" in new WithApplication {
       val controller = new HomeController(stubControllerComponents(), mock[TouringService])
@@ -57,7 +56,7 @@ class HomeControllerSpec extends Specification with Mockito {
       val controller = new HomeController(stubControllerComponents(), touringService)
 
       val getTours = controller.getTours().apply(
-        postJsonRequest("/getTours").withJsonBody(Json.toJson(tourRequest))
+        postJsonRequest("/getTours").withJsonBody(Json.toJson(TourRequest((1, 1), (0, 0), 42)))
       )
 
       status(getTours) must beEqualTo(OK)

@@ -11,10 +11,6 @@ html {
   margin: 0;
 }
 
-ul { /* Fixes the mysterious +3 that Row components have */
-  margin-bottom: -3px;
-}
-
 .App {
   text-align: center;
 }

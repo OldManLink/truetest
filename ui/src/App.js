@@ -2,9 +2,9 @@ import React, {Component} from 'react';
 import Api from "./Api";
 import Tour from "./Tour";
 
-import './App.css';
 import Board from "./Board";
 
+import './App.css';
 export default class App extends Component {
 
   constructor(props) {
@@ -67,11 +67,11 @@ export default class App extends Component {
                touringCallback={this.getTours}/>
         {this.state.tours.length === 0
           ? (
-            <div><br/>Click any square to generate its possible tours.</div>
+            <div>Click any square to generate its possible tours.</div>
           )
           : (
             <div>
-              <br/>"[Click any Tour to (re)play it)]"<br/>
+              <div>Click any Tour to (re)play it.</div>
               <ul>
                 {this.state.tours.map(tour =>
                   <Tour key={"Tour-" + tour.id}
