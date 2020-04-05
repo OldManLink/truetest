@@ -17,3 +17,5 @@ libraryDependencies ++= Seq(
 )
 
 coverageExcludedPackages := ".*Reverse.*;.*Routes.*;"
+
+scalacOptions ++= Seq("-deprecation", "-feature", "-language:postfixOps")

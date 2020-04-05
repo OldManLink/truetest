@@ -1,45 +1,39 @@
 package controllers
 
 import java.io.File
-
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 
+import org.specs2.specification.BeforeSpec
 import org.junit.runner.RunWith
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
+import org.specs2.specification.core.Fragments
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.Helpers._
 import play.api.test._
 
 @RunWith(classOf[JUnitRunner])
-class FrontendControllerSpec extends Specification with Mockito {
-
+class FrontendControllerSpec extends Specification with Mockito with BeforeSpec {
   /**
-    * Assumes the file `/public/index.html` either doesn't exist, or exists and has these exact contents.
+    * This spec assumes the file `/public/index.html` either doesn't exist, or exists and has these exact contents.
     * This can change if the `sbt dist` command is ever executed
     */
   val testHtmlPath = "public/index.html"
-  val testHtml = "<html><head></head><body>Test</body></html>"
+  val testHtml = "<html><head></head><body><h1>Test</h1></body></html>"
+
+  // Ensure the required test file exists or is created
+  @Override
+  override def beforeSpec: Fragments = {
+    if (testFileExists) success
+    else {
+      createTestFie
+      success
+    }
+  }
 
   "FrontendController" should {
-
-    "ensure the required test file exists or is created" in {
-      val contents = if(Files.exists(Paths.get(testHtmlPath))){
-        val testTxtSource = scala.io.Source.fromFile("public/index.html")
-        val contents = testTxtSource.mkString
-        testTxtSource.close()
-        contents
-      }
-      if (testHtml equals contents) { success }
-      else {
-        new File(testHtmlPath.split(File.separator).head).mkdirs
-        Files.write(Paths.get("public/index.html"), testHtml.getBytes(StandardCharsets.UTF_8))
-        success
-      }
-    }
-
     "render the index from the application" in new WithApplication {
       val controller = app.injector.instanceOf[FrontendController]
       val index = controller.index().apply(getRequest("/"))
@@ -84,4 +78,19 @@ class FrontendControllerSpec extends Specification with Mockito {
 
   private def getRequest(uri: String): FakeRequest[AnyContentAsEmpty.type] = FakeRequest(GET, uri).withHeaders("User-Agent" -> "Foobar")
 
+  private def testFileExists: Boolean = {
+    val contents = if (Files.exists(Paths.get(testHtmlPath))) {
+      val testTxtSource = scala.io.Source.fromFile("public/index.html")
+      val contents = testTxtSource.mkString
+      testTxtSource.close()
+      contents
+    }
+    testHtml equals contents
+  }
+
+  private def createTestFie: Boolean = {
+    new File(testHtmlPath.split(File.separator).head).mkdirs
+    Files.write(Paths.get("public/index.html"), testHtml.getBytes(StandardCharsets.UTF_8))
+    testFileExists
+  }
 }

@@ -1,0 +1,439 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          models/Square.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package models
+</span>2 <span style=''>
+</span>3 <span style=''>import helpers.Step
+</span>4 <span style=''>
+</span>5 <span style=''>case class Square(rowIndex: Int, columnIndex: Int, boardIndex: Int, possibleSteps: Seq[Step]) {
+</span>6 <span style=''>
+</span>7 <span style=''>  lazy val isBlocked: Boolean = possibleSteps == Nil
+</span>8 <span style=''>
+</span>9 <span style=''>  def asTuple: (Int, Int) = </span><span style='background: #AEF1AE'>(rowIndex, columnIndex)</span><span style=''>
+</span>10 <span style=''>
+</span>11 <span style=''>  @Override
+</span>12 <span style=''>  override def toString: String =
+</span>13 <span style=''>    </span><span style='background: #AEF1AE'>s&quot;&quot;&quot;{$rowIndex, $columnIndex, index: $boardIndex steps: ${
+</span>14 <span style=''></span><span style='background: #AEF1AE'>      possibleSteps.mkString(&quot;[&quot;, &quot;,&quot;, &quot;]&quot;)}}&quot;&quot;&quot;</span><span style=''>
+</span>15 <span style=''>}
+</span>16 <span style=''>
+</span>17 <span style=''>object Square {
+</span>18 <span style=''>
+</span>19 <span style=''>  val ORIGIN: Square = </span><span style='background: #AEF1AE'>Square(0, 0, 0, Nil)</span><span style=''>
+</span>20 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          331
+        </td>
+        <td>
+          227
+          -
+          238
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.Square.columnIndex
+        </td>
+        <td style="background: #AEF1AE">
+          Square.this.columnIndex
+        </td>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          330
+        </td>
+        <td>
+          217
+          -
+          225
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.Square.rowIndex
+        </td>
+        <td style="background: #AEF1AE">
+          Square.this.rowIndex
+        </td>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          332
+        </td>
+        <td>
+          216
+          -
+          239
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Tuple2.apply[Int, Int](Square.this.rowIndex, Square.this.columnIndex)
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          340
+        </td>
+        <td>
+          329
+          -
+          339
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.Square.boardIndex
+        </td>
+        <td style="background: #AEF1AE">
+          Square.this.boardIndex
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          334
+        </td>
+        <td>
+          305
+          -
+          308
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;, &quot;
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          336
+        </td>
+        <td>
+          339
+          -
+          348
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot; steps: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          339
+        </td>
+        <td>
+          308
+          -
+          319
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.Square.columnIndex
+        </td>
+        <td style="background: #AEF1AE">
+          Square.this.columnIndex
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          333
+        </td>
+        <td>
+          295
+          -
+          297
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;{&quot;
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          342
+        </td>
+        <td>
+          291
+          -
+          398
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.StringContext.s
+        </td>
+        <td style="background: #AEF1AE">
+          scala.StringContext.apply(&quot;{&quot;, &quot;, &quot;, &quot;, index: &quot;, &quot; steps: &quot;, &quot;}&quot;).s(Square.this.rowIndex, Square.this.columnIndex, Square.this.boardIndex, Square.this.possibleSteps.mkString(&quot;[&quot;, &quot;,&quot;, &quot;]&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          335
+        </td>
+        <td>
+          319
+          -
+          329
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;, index: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          338
+        </td>
+        <td>
+          297
+          -
+          305
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.Square.rowIndex
+        </td>
+        <td style="background: #AEF1AE">
+          Square.this.rowIndex
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          337
+        </td>
+        <td>
+          394
+          -
+          398
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;}&quot;
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          341
+        </td>
+        <td>
+          356
+          -
+          393
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.TraversableOnce.mkString
+        </td>
+        <td style="background: #AEF1AE">
+          Square.this.possibleSteps.mkString(&quot;[&quot;, &quot;,&quot;, &quot;]&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          346
+        </td>
+        <td>
+          458
+          -
+          461
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.Nil
+        </td>
+        <td style="background: #AEF1AE">
+          scala.collection.immutable.Nil
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          343
+        </td>
+        <td>
+          449
+          -
+          450
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          0
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          345
+        </td>
+        <td>
+          455
+          -
+          456
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          0
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          344
+        </td>
+        <td>
+          452
+          -
+          453
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          0
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          347
+        </td>
+        <td>
+          442
+          -
+          462
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          models.Square.apply
+        </td>
+        <td style="background: #AEF1AE">
+          Square.apply(0, 0, 0, scala.collection.immutable.Nil)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

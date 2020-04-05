@@ -6,6 +6,8 @@ case class Square(rowIndex: Int, columnIndex: Int, boardIndex: Int, possibleStep
 
   lazy val isBlocked: Boolean = possibleSteps == Nil
 
+  def asTuple: (Int, Int) = (rowIndex, columnIndex)
+
   @Override
   override def toString: String =
     s"""{$rowIndex, $columnIndex, index: $boardIndex steps: ${

@@ -1,0 +1,612 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          helpers/TouringHelper.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package helpers
+</span>2 <span style=''>
+</span>3 <span style=''>import models.{Square, TourChunkRequest}
+</span>4 <span style=''>
+</span>5 <span style=''>case class TouringHelper(chunkRequest: TourChunkRequest) {
+</span>6 <span style=''>
+</span>7 <span style=''>  def getStartSquare: Square = startSquare
+</span>8 <span style=''>
+</span>9 <span style=''>  def getTours: Seq[Position] = finishedTours match {
+</span>10 <span style=''>    case Stream() =&gt; </span><span style='background: #AEF1AE'>Nil</span><span style=''>
+</span>11 <span style=''>    case stream =&gt; </span><span style='background: #AEF1AE'>stream take chunkRequest.max</span><span style=''>
+</span>12 <span style=''>  }
+</span>13 <span style=''>
+</span>14 <span style=''>  def toursStream(position: Position): Stream[Position] = {
+</span>15 <span style=''>    </span><span style='background: #AEF1AE'>position.nextSteps.map { nextStep =&gt;
+</span>16 <span style=''></span><span style='background: #AEF1AE'>      Position(nextStep.square, nextStep.move :: position.history, nextStep.square.boardIndex :: position.visited)
+</span>17 <span style=''></span><span style='background: #AEF1AE'>    }.toStream</span><span style=''>
+</span>18 <span style=''>  }
+</span>19 <span style=''>
+</span>20 <span style=''>  def toursFrom(initial: Stream[Position]): Stream[Position] = {
+</span>21 <span style=''>    if (</span><span style='background: #AEF1AE'>initial.isEmpty</span><span style=''>) </span><span style='background: #AEF1AE'>Stream.empty</span><span style=''>
+</span>22 <span style=''>    else </span><span style='background: #AEF1AE'>{
+</span>23 <span style=''></span><span style='background: #AEF1AE'>      val newTours = for {
+</span>24 <span style=''></span><span style='background: #AEF1AE'>        position &lt;- initial
+</span>25 <span style=''></span><span style='background: #AEF1AE'>        next &lt;- toursStream(position)
+</span>26 <span style=''></span><span style='background: #AEF1AE'>      } yield next
+</span>27 <span style=''></span><span style='background: #AEF1AE'>      initial ++ toursFrom(newTours)
+</span>28 <span style=''></span><span style='background: #AEF1AE'>    }</span><span style=''>
+</span>29 <span style=''>  }
+</span>30 <span style=''>
+</span>31 <span style=''>  def isGoodEnd(pos: Position): Boolean = {
+</span>32 <span style=''>    </span><span style='background: #AEF1AE'>chunkRequest.chunkIDs.size</span><span style=''> match {
+</span>33 <span style=''>      case 4 =&gt; </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>34 <span style=''>      case _ =&gt; </span><span style='background: #AEF1AE'>chunkRequest.chunkIDs.take(2)</span><span style=''> match {
+</span>35 <span style=''>        case first :: rest =&gt; </span><span style='background: #AEF1AE'>!first.forbids(pos.coords, rest)</span><span style=''>
+</span>36 <span style=''>        case _ =&gt; </span><span style='background: #F0ADAD'>throw new NoSuchElementException(&quot;Impossible situation, but this keeps the compiler free from warnings.&quot;)</span><span style=''>
+</span>37 <span style=''>      }
+</span>38 <span style=''>    }
+</span>39 <span style=''>  }
+</span>40 <span style=''>
+</span>41 <span style=''>  private lazy val board = ObjectFactory.getOptimisedBoard(chunkRequest)
+</span>42 <span style=''>
+</span>43 <span style=''>  private lazy val startSquare = board.getSquare(chunkRequest.startSquare.asTuple).get
+</span>44 <span style=''>
+</span>45 <span style=''>  private lazy val startPosition = Position(startSquare, List(chunkRequest.previousMove), List(startSquare.boardIndex))
+</span>46 <span style=''>
+</span>47 <span style=''>  private lazy val toursFromStart: Stream[Position] = toursFrom(List(startPosition).toStream)
+</span>48 <span style=''>
+</span>49 <span style=''>  private lazy val toursWithGoodEnd: Stream[Position] = toursFromStart.filter(isGoodEnd)
+</span>50 <span style=''>
+</span>51 <span style=''>  private lazy val finishedTours: Stream[Position] = toursWithGoodEnd.filter(_.completes(board))
+</span>52 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          273
+        </td>
+        <td>
+          238
+          -
+          241
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.Nil
+        </td>
+        <td style="background: #AEF1AE">
+          scala.collection.immutable.Nil
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          274
+        </td>
+        <td>
+          273
+          -
+          289
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.TourChunkRequest.max
+        </td>
+        <td style="background: #AEF1AE">
+          TouringHelper.this.chunkRequest.max
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          275
+        </td>
+        <td>
+          261
+          -
+          289
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.Stream.take
+        </td>
+        <td style="background: #AEF1AE">
+          stream.take(TouringHelper.this.chunkRequest.max)
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          279
+        </td>
+        <td>
+          382
+          -
+          382
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.Seq.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          collection.this.Seq.canBuildFrom[helpers.Position]
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          277
+        </td>
+        <td>
+          490
+          -
+          509
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.::
+        </td>
+        <td style="background: #AEF1AE">
+          position.visited.::[Int](x$2)
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          276
+        </td>
+        <td>
+          442
+          -
+          461
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.::
+        </td>
+        <td style="background: #AEF1AE">
+          position.history.::[helpers.Move](x$1)
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          278
+        </td>
+        <td>
+          402
+          -
+          510
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.Position.apply
+        </td>
+        <td style="background: #AEF1AE">
+          Position.apply(nextStep.square, {
+  &lt;synthetic&gt; &lt;artifact&gt; val x$1: helpers.Move = nextStep.move;
+  position.history.::[helpers.Move](x$1)
+}, {
+  &lt;synthetic&gt; &lt;artifact&gt; val x$2: Int = nextStep.square.boardIndex;
+  position.visited.::[Int](x$2)
+})
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          280
+        </td>
+        <td>
+          359
+          -
+          525
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.IterableLike.toStream
+        </td>
+        <td style="background: #AEF1AE">
+          position.nextSteps.map[helpers.Position, Seq[helpers.Position]](((nextStep: helpers.Step) =&gt; Position.apply(nextStep.square, {
+  &lt;synthetic&gt; &lt;artifact&gt; val x$1: helpers.Move = nextStep.move;
+  position.history.::[helpers.Move](x$1)
+}, {
+  &lt;synthetic&gt; &lt;artifact&gt; val x$2: Int = nextStep.square.boardIndex;
+  position.visited.::[Int](x$2)
+})))(collection.this.Seq.canBuildFrom[helpers.Position]).toStream
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          283
+        </td>
+        <td>
+          621
+          -
+          633
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          scala.collection.immutable.Stream.empty
+        </td>
+        <td style="background: #AEF1AE">
+          scala.`package`.Stream.empty[Nothing]
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          282
+        </td>
+        <td>
+          621
+          -
+          633
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.Stream.empty
+        </td>
+        <td style="background: #AEF1AE">
+          scala.`package`.Stream.empty[Nothing]
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          281
+        </td>
+        <td>
+          604
+          -
+          619
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.SeqLike.isEmpty
+        </td>
+        <td style="background: #AEF1AE">
+          initial.isEmpty
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          291
+        </td>
+        <td>
+          643
+          -
+          799
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          {
+  val newTours: scala.collection.immutable.Stream[helpers.Position] = initial.flatMap[helpers.Position, scala.collection.immutable.Stream[helpers.Position]](((position: helpers.Position) =&gt; TouringHelper.this.toursStream(position).map[helpers.Position, scala.collection.immutable.Stream[helpers.Position]](((next: helpers.Position) =&gt; next))(immutable.this.Stream.canBuildFrom[helpers.Position])))(immutable.this.Stream.canBuildFrom[helpers.Position]);
+  initial.++[helpers.Position, Stream[helpers.Position]](TouringHelper.this.toursFrom(newTours))(immutable.this.Stream.canBuildFrom[helpers.Position])
+}
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          286
+        </td>
+        <td>
+          689
+          -
+          689
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.Stream.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          immutable.this.Stream.canBuildFrom[helpers.Position]
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          287
+        </td>
+        <td>
+          666
+          -
+          756
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.immutable.Stream.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          initial.flatMap[helpers.Position, scala.collection.immutable.Stream[helpers.Position]](((position: helpers.Position) =&gt; TouringHelper.this.toursStream(position).map[helpers.Position, scala.collection.immutable.Stream[helpers.Position]](((next: helpers.Position) =&gt; next))(immutable.this.Stream.canBuildFrom[helpers.Position])))(immutable.this.Stream.canBuildFrom[helpers.Position])
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          285
+        </td>
+        <td>
+          708
+          -
+          756
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.immutable.Stream.map
+        </td>
+        <td style="background: #AEF1AE">
+          TouringHelper.this.toursStream(position).map[helpers.Position, scala.collection.immutable.Stream[helpers.Position]](((next: helpers.Position) =&gt; next))(immutable.this.Stream.canBuildFrom[helpers.Position])
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          284
+        </td>
+        <td>
+          713
+          -
+          713
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.Stream.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          immutable.this.Stream.canBuildFrom[helpers.Position]
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          289
+        </td>
+        <td>
+          771
+          -
+          771
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.Stream.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          immutable.this.Stream.canBuildFrom[helpers.Position]
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          288
+        </td>
+        <td>
+          774
+          -
+          793
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.TouringHelper.toursFrom
+        </td>
+        <td style="background: #AEF1AE">
+          TouringHelper.this.toursFrom(newTours)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          290
+        </td>
+        <td>
+          763
+          -
+          793
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.immutable.Stream.++
+        </td>
+        <td style="background: #AEF1AE">
+          initial.++[helpers.Position, Stream[helpers.Position]](TouringHelper.this.toursFrom(newTours))(immutable.this.Stream.canBuildFrom[helpers.Position])
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          292
+        </td>
+        <td>
+          853
+          -
+          879
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.SeqLike.size
+        </td>
+        <td style="background: #AEF1AE">
+          TouringHelper.this.chunkRequest.chunkIDs.size
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          293
+        </td>
+        <td>
+          904
+          -
+          908
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          294
+        </td>
+        <td>
+          925
+          -
+          954
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.take
+        </td>
+        <td style="background: #AEF1AE">
+          TouringHelper.this.chunkRequest.chunkIDs.take(2)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          295
+        </td>
+        <td>
+          993
+          -
+          1025
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #AEF1AE">
+          first.forbids(pos.coords, rest).unary_!
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          296
+        </td>
+        <td>
+          1044
+          -
+          1149
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new scala.`package`.NoSuchElementException(&quot;Impossible situation, but this keeps the compiler free from warnings.&quot;)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

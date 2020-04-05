@@ -1,0 +1,357 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          services/TouringService.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package services
+</span>2 <span style=''>
+</span>3 <span style=''>import models.{TourRequest, TourResponse}
+</span>4 <span style=''>import play.api.Logging
+</span>5 <span style=''>import play.api.libs.json.Json
+</span>6 <span style=''>
+</span>7 <span style=''>trait TouringService {
+</span>8 <span style=''>  def getTours(tourRequest: TourRequest): TourResponse
+</span>9 <span style=''>}
+</span>10 <span style=''>
+</span>11 <span style=''>class TouringServiceImpl extends TouringService with StrategyService with Logging {
+</span>12 <span style=''>
+</span>13 <span style=''>  override def getTours(tourRequest: TourRequest): TourResponse = {
+</span>14 <span style=''>
+</span>15 <span style=''>    val searchStrategy = </span><span style='background: #AEF1AE'>getStrategy(tourRequest)</span><span style=''>
+</span>16 <span style=''>
+</span>17 <span style=''>    val tours = </span><span style='background: #AEF1AE'>searchStrategy.getTours</span><span style=''>
+</span>18 <span style=''>
+</span>19 <span style=''>    </span><span style='background: #AEF1AE'>logger.info(s&quot;Created ${tours.size} tours for ${Json.toJson(tourRequest)}, using ${searchStrategy.getClass.getSimpleName}&quot;)</span><span style=''>
+</span>20 <span style=''>    </span><span style='background: #AEF1AE'>TourResponse(tours)</span><span style=''>
+</span>21 <span style=''>  }
+</span>22 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          379
+        </td>
+        <td>
+          376
+          -
+          400
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          services.StrategyService.getStrategy
+        </td>
+        <td style="background: #AEF1AE">
+          TouringServiceImpl.this.getStrategy(tourRequest)
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          380
+        </td>
+        <td>
+          418
+          -
+          441
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.TourSearchStrategy.getTours
+        </td>
+        <td style="background: #AEF1AE">
+          searchStrategy.getTours
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          391
+        </td>
+        <td>
+          447
+          -
+          570
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          play.api.LoggerLike.info
+        </td>
+        <td style="background: #AEF1AE">
+          TouringServiceImpl.this.logger.info(scala.StringContext.apply(&quot;Created &quot;, &quot; tours for &quot;, &quot;, using &quot;, &quot;&quot;).s(tours.size, play.api.libs.json.Json.toJson[models.TourRequest](tourRequest)(models.this.TourRequest.tourRequestFormat), searchStrategy.getClass().getSimpleName()))(api.this.MarkerContext.NoMarker)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          382
+        </td>
+        <td>
+          482
+          -
+          494
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot; tours for &quot;
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          385
+        </td>
+        <td>
+          471
+          -
+          481
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.SeqLike.size
+        </td>
+        <td style="background: #AEF1AE">
+          tours.size
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          388
+        </td>
+        <td>
+          530
+          -
+          567
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Class.getSimpleName
+        </td>
+        <td style="background: #AEF1AE">
+          searchStrategy.getClass().getSimpleName()
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          387
+        </td>
+        <td>
+          495
+          -
+          519
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          play.api.libs.json.Json.toJson
+        </td>
+        <td style="background: #AEF1AE">
+          play.api.libs.json.Json.toJson[models.TourRequest](tourRequest)(models.this.TourRequest.tourRequestFormat)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          381
+        </td>
+        <td>
+          461
+          -
+          470
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;Created &quot;
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          390
+        </td>
+        <td>
+          458
+          -
+          458
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          play.api.LowPriorityMarkerContextImplicits.NoMarker
+        </td>
+        <td style="background: #AEF1AE">
+          api.this.MarkerContext.NoMarker
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          384
+        </td>
+        <td>
+          568
+          -
+          569
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;&quot;
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          383
+        </td>
+        <td>
+          520
+          -
+          529
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;, using &quot;
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          386
+        </td>
+        <td>
+          506
+          -
+          506
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.TourRequest.tourRequestFormat
+        </td>
+        <td style="background: #AEF1AE">
+          models.this.TourRequest.tourRequestFormat
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          389
+        </td>
+        <td>
+          459
+          -
+          569
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.StringContext.s
+        </td>
+        <td style="background: #AEF1AE">
+          scala.StringContext.apply(&quot;Created &quot;, &quot; tours for &quot;, &quot;, using &quot;, &quot;&quot;).s(tours.size, play.api.libs.json.Json.toJson[models.TourRequest](tourRequest)(models.this.TourRequest.tourRequestFormat), searchStrategy.getClass().getSimpleName())
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          392
+        </td>
+        <td>
+          575
+          -
+          594
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          models.TourResponse.apply
+        </td>
+        <td style="background: #AEF1AE">
+          models.TourResponse.apply(tours)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

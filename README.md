@@ -6,7 +6,7 @@
 > 
 > Implemented in Play/Scala on the backend and ReactJS on the frontend. Based on the excellent [Scala Play React Seed](http://bit.ly/2A1AzEq) .
  
-![PlayingTour](https://github.com/OldManLink/truetest/blob/master/docs/02_PlayingTour.png)
+![TourDone](https://github.com/OldManLink/truetest/blob/master/docs/03_TourDone.png)
 
 ## How to build it?
 
@@ -102,7 +102,8 @@ Click on any Tour to se it playback on the board. As each square is visited it t
 
 ![PlayingTour](https://github.com/OldManLink/truetest/blob/master/docs/02_PlayingTour.png)
 
-The system is quite robust, since it is written in Scala, but I have apparently missed some detail in my work, as any board sizes bigger that 5x5 cause my machine to crash with an out of memory error. Instead of spending too much time investigating that now, I'm sending the assignment as is, so that you can see the almost-finished app while I finish debugging that last detail.
+The system is quite robust, since it is written in Scala, but with my initial solution any board sizes bigger that 5x5 caused my machine to crash with an [out of memory error](https://github.com/OldManLink/truetest/blob/master/docs/stackTrace.txt). Instead of spending too much time investigating that, I decided to switch to a Divide and Conquer strategy that chops the board up into quarters, solves them, and puts the solutions back together again. This is how the resulting tour can look like: ![TourDone](https://github.com/OldManLink/truetest/blob/master/docs/03_TourDone.png)
+
 
 ### Stop the server and frontend
 To stop the client smoothly, simply reload the page on your browser. React will smoothly unmount and terminate any running tours. Once this is done, press `<Ctrl> C` in the console to terminate the backend and frontend services.

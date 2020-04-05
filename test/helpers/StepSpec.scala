@@ -22,7 +22,7 @@ class StepSpec extends Specification with Mockito {
     }
 
     "report unvisited steps count" in {
-      val board = ObjectFactory.getOptimisedBoard(TourRequest((5, 5)))
+      val board = ObjectFactory.getTestBoard(TourRequest((5, 5)))
 
       /**
         * Uncomment this line to see the board.

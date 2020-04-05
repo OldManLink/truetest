@@ -1,0 +1,2079 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          helpers/ObjectFactory.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package helpers
+</span>2 <span style=''>
+</span>3 <span style=''>import com.google.common.annotations.VisibleForTesting
+</span>4 <span style=''>import helpers.Move.validMoves
+</span>5 <span style=''>import models.{Board, Row, Square, TourChunkRequest, TourRequest}
+</span>6 <span style=''>
+</span>7 <span style=''>object ObjectFactory {
+</span>8 <span style=''>
+</span>9 <span style=''>  def getOptimisedBoard(tourChunkRequest: TourChunkRequest): Board = </span><span style='background: #AEF1AE'>boardFactory(tourChunkRequest).build.getOptimisedBoard</span><span style=''>
+</span>10 <span style=''>
+</span>11 <span style=''>  def boardFactory(tourChunkRequest: TourChunkRequest): BoardFactory = {
+</span>12 <span style=''>    </span><span style='background: #AEF1AE'>BoardFactory(
+</span>13 <span style=''></span><span style='background: #AEF1AE'>      0 until tourChunkRequest.board.rows map { rowIndex =&gt;
+</span>14 <span style=''></span><span style='background: #AEF1AE'>        RowFactory(
+</span>15 <span style=''></span><span style='background: #AEF1AE'>          rowIndex, 0 until tourChunkRequest.board.columns map { colIndex =&gt;
+</span>16 <span style=''></span><span style='background: #AEF1AE'>            SquareFactory(rowIndex, colIndex)
+</span>17 <span style=''></span><span style='background: #AEF1AE'>          })
+</span>18 <span style=''></span><span style='background: #AEF1AE'>      })</span><span style=''>
+</span>19 <span style=''>  }
+</span>20 <span style=''>
+</span>21 <span style=''>  case class BoardFactory(rowFactories: Seq[RowFactory]) {
+</span>22 <span style=''>
+</span>23 <span style=''>    def columnCount: Int = </span><span style='background: #AEF1AE'>rowFactories.head.squareFactories.size</span><span style=''>
+</span>24 <span style=''>
+</span>25 <span style=''>    def getSquare(row: Int, column: Int): Option[SquareFactory] = </span><span style='background: #AEF1AE'>rowFactories.find(_.index == row).flatMap(_.getSquare(column))</span><span style=''>
+</span>26 <span style=''>
+</span>27 <span style=''>    def build: BoardFactory = {
+</span>28 <span style=''>      val rows: Seq[Row] = </span><span style='background: #AEF1AE'>rowFactories.map(_.build(this))</span><span style=''>
+</span>29 <span style=''>      </span><span style='background: #AEF1AE'>optimisedBoard = Board(rows)</span><span style=''>
+</span>30 <span style=''>      this
+</span>31 <span style=''>    }
+</span>32 <span style=''>
+</span>33 <span style=''>    private var optimisedBoard: Board = _
+</span>34 <span style=''>
+</span>35 <span style=''>    def getOptimisedBoard: Board = </span><span style='background: #AEF1AE'>optimisedBoard</span><span style=''>
+</span>36 <span style=''>
+</span>37 <span style=''>    @Override
+</span>38 <span style=''>    override def toString: String = </span><span style='background: #AEF1AE'>s&quot;{rows: ${rowFactories.mkString(&quot;[\n    &quot;, &quot;,\n    &quot;, &quot;]&quot;)}}&quot;</span><span style=''>
+</span>39 <span style=''>
+</span>40 <span style=''>  }
+</span>41 <span style=''>
+</span>42 <span style=''>  case class RowFactory(index: Int, squareFactories: Seq[SquareFactory]) {
+</span>43 <span style=''>
+</span>44 <span style=''>    def getSquare(column: Int): Option[SquareFactory] = </span><span style='background: #AEF1AE'>squareFactories.find(_.columnIndex == column)</span><span style=''>
+</span>45 <span style=''>
+</span>46 <span style=''>    def build(board: BoardFactory): Row = {
+</span>47 <span style=''>      val squares: Seq[Square] = </span><span style='background: #AEF1AE'>squareFactories.map(_.build(board))</span><span style=''>
+</span>48 <span style=''>      </span><span style='background: #AEF1AE'>Row(index, squares)</span><span style=''>
+</span>49 <span style=''>    }
+</span>50 <span style=''>
+</span>51 <span style=''>    @Override
+</span>52 <span style=''>    override def toString: String = </span><span style='background: #AEF1AE'>s&quot;{index: $index: squares: ${squareFactories.mkString(&quot;[&quot;, &quot;,&quot;, &quot;]&quot;)}}&quot;</span><span style=''>
+</span>53 <span style=''>  }
+</span>54 <span style=''>
+</span>55 <span style=''>  case class SquareFactory(rowIndex: Int, columnIndex: Int) {
+</span>56 <span style=''>
+</span>57 <span style=''>    def destination(boardFactory: BoardFactory, squareFactory: SquareFactory)(move: Move): Option[StepFactory] = {
+</span>58 <span style=''>      </span><span style='background: #AEF1AE'>boardFactory.getSquare(squareFactory.rowIndex + move.y, squareFactory.columnIndex + move.x)
+</span>59 <span style=''></span><span style='background: #AEF1AE'>        .map(square =&gt; StepFactory(move, square)(boardFactory))</span><span style=''>
+</span>60 <span style=''>    }
+</span>61 <span style=''>
+</span>62 <span style=''>    def possibleSteps(board: BoardFactory): List[StepFactory] = </span><span style='background: #AEF1AE'>validMoves.flatMap(destination(board, this)).toList</span><span style=''>
+</span>63 <span style=''>
+</span>64 <span style=''>    def build(board: BoardFactory): Square = {
+</span>65 <span style=''>      val boardIndex = </span><span style='background: #AEF1AE'>rowIndex * board.columnCount + columnIndex</span><span style=''>
+</span>66 <span style=''>      </span><span style='background: #AEF1AE'>Square(rowIndex, columnIndex, boardIndex, possibleSteps(board).map(_.build(this)))</span><span style=''>
+</span>67 <span style=''>    }
+</span>68 <span style=''>
+</span>69 <span style=''>    @Override
+</span>70 <span style=''>    override def toString: String = </span><span style='background: #AEF1AE'>s&quot;{$rowIndex, $columnIndex}&quot;</span><span style=''>
+</span>71 <span style=''>  }
+</span>72 <span style=''>
+</span>73 <span style=''>  case class StepFactory(move: Move, squareFactory: SquareFactory)(boardFactory: BoardFactory) {
+</span>74 <span style=''>
+</span>75 <span style=''>    val resolver: SquareResolver = </span><span style='background: #AEF1AE'>SquareResolver(squareFactory.rowIndex, squareFactory.columnIndex, boardFactory)</span><span style=''>
+</span>76 <span style=''>
+</span>77 <span style=''>    def build(squareFactory: SquareFactory): Step = </span><span style='background: #AEF1AE'>Step(move, resolver)</span><span style=''>
+</span>78 <span style=''>  }
+</span>79 <span style=''>
+</span>80 <span style=''>  case class SquareResolver(row: Int, column: Int, boardFactory: BoardFactory) {
+</span>81 <span style=''>
+</span>82 <span style=''>    def resolve: Square = {
+</span>83 <span style=''>
+</span>84 <span style=''>      </span><span style='background: #AEF1AE'>boardFactory.getOptimisedBoard.getSquare(row, column).get</span><span style=''>
+</span>85 <span style=''>    }
+</span>86 <span style=''>
+</span>87 <span style=''>    @Override
+</span>88 <span style=''>    override def toString: String = </span><span style='background: #AEF1AE'>s&quot;{$row, $column}&quot;</span><span style=''>
+</span>89 <span style=''>  }
+</span>90 <span style=''>
+</span>91 <span style=''>  @VisibleForTesting
+</span>92 <span style=''>  def getTestBoard(tourRequest: TourRequest): Board = </span><span style='background: #AEF1AE'>boardFactory(tourRequest).build.getOptimisedBoard</span><span style=''>
+</span>93 <span style=''>
+</span>94 <span style=''>  @VisibleForTesting
+</span>95 <span style=''>  def boardFactory(tourRequest: TourRequest): BoardFactory = {
+</span>96 <span style=''>    </span><span style='background: #AEF1AE'>BoardFactory(
+</span>97 <span style=''></span><span style='background: #AEF1AE'>      0 until tourRequest.board.rows map { rowIndex =&gt;
+</span>98 <span style=''></span><span style='background: #AEF1AE'>        RowFactory(
+</span>99 <span style=''></span><span style='background: #AEF1AE'>          rowIndex, 0 until tourRequest.board.columns map { colIndex =&gt;
+</span>100 <span style=''></span><span style='background: #AEF1AE'>            SquareFactory(rowIndex, colIndex)
+</span>101 <span style=''></span><span style='background: #AEF1AE'>          })
+</span>102 <span style=''></span><span style='background: #AEF1AE'>      })</span><span style=''>
+</span>103 <span style=''>  }
+</span>104 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          103
+        </td>
+        <td>
+          263
+          -
+          317
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ObjectFactory.BoardFactory.getOptimisedBoard
+        </td>
+        <td style="background: #AEF1AE">
+          ObjectFactory.this.boardFactory(tourChunkRequest).build.getOptimisedBoard
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          114
+        </td>
+        <td>
+          396
+          -
+          634
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ObjectFactory.BoardFactory.apply
+        </td>
+        <td style="background: #AEF1AE">
+          ObjectFactory.this.BoardFactory.apply(scala.Predef.intWrapper(0).until(tourChunkRequest.board.rows).map[helpers.ObjectFactory.RowFactory, Seq[helpers.ObjectFactory.RowFactory]](((rowIndex: Int) =&gt; ObjectFactory.this.RowFactory.apply(rowIndex, scala.Predef.intWrapper(0).until(tourChunkRequest.board.columns).map[helpers.ObjectFactory.SquareFactory, Seq[helpers.ObjectFactory.SquareFactory]](((colIndex: Int) =&gt; ObjectFactory.this.SquareFactory.apply(rowIndex, colIndex)))(immutable.this.IndexedSeq.canBuildFrom[helpers.ObjectFactory.SquareFactory]))))(immutable.this.IndexedSeq.canBuildFrom[helpers.ObjectFactory.RowFactory]))
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          104
+        </td>
+        <td>
+          416
+          -
+          417
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          0
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          113
+        </td>
+        <td>
+          416
+          -
+          625
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.TraversableLike.map
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.intWrapper(0).until(tourChunkRequest.board.rows).map[helpers.ObjectFactory.RowFactory, Seq[helpers.ObjectFactory.RowFactory]](((rowIndex: Int) =&gt; ObjectFactory.this.RowFactory.apply(rowIndex, scala.Predef.intWrapper(0).until(tourChunkRequest.board.columns).map[helpers.ObjectFactory.SquareFactory, Seq[helpers.ObjectFactory.SquareFactory]](((colIndex: Int) =&gt; ObjectFactory.this.SquareFactory.apply(rowIndex, colIndex)))(immutable.this.IndexedSeq.canBuildFrom[helpers.ObjectFactory.SquareFactory]))))(immutable.this.IndexedSeq.canBuildFrom[helpers.ObjectFactory.RowFactory])
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          112
+        </td>
+        <td>
+          452
+          -
+          452
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.IndexedSeq.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          immutable.this.IndexedSeq.canBuildFrom[helpers.ObjectFactory.RowFactory]
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          105
+        </td>
+        <td>
+          424
+          -
+          451
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.BoardDescription.rows
+        </td>
+        <td style="background: #AEF1AE">
+          tourChunkRequest.board.rows
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          111
+        </td>
+        <td>
+          478
+          -
+          625
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ObjectFactory.RowFactory.apply
+        </td>
+        <td style="background: #AEF1AE">
+          ObjectFactory.this.RowFactory.apply(rowIndex, scala.Predef.intWrapper(0).until(tourChunkRequest.board.columns).map[helpers.ObjectFactory.SquareFactory, Seq[helpers.ObjectFactory.SquareFactory]](((colIndex: Int) =&gt; ObjectFactory.this.SquareFactory.apply(rowIndex, colIndex)))(immutable.this.IndexedSeq.canBuildFrom[helpers.ObjectFactory.SquareFactory]))
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          110
+        </td>
+        <td>
+          510
+          -
+          612
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.TraversableLike.map
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.intWrapper(0).until(tourChunkRequest.board.columns).map[helpers.ObjectFactory.SquareFactory, Seq[helpers.ObjectFactory.SquareFactory]](((colIndex: Int) =&gt; ObjectFactory.this.SquareFactory.apply(rowIndex, colIndex)))(immutable.this.IndexedSeq.canBuildFrom[helpers.ObjectFactory.SquareFactory])
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          107
+        </td>
+        <td>
+          518
+          -
+          548
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.BoardDescription.columns
+        </td>
+        <td style="background: #AEF1AE">
+          tourChunkRequest.board.columns
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          106
+        </td>
+        <td>
+          510
+          -
+          511
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          0
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          109
+        </td>
+        <td>
+          549
+          -
+          549
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.IndexedSeq.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          immutable.this.IndexedSeq.canBuildFrom[helpers.ObjectFactory.SquareFactory]
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          108
+        </td>
+        <td>
+          579
+          -
+          612
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ObjectFactory.SquareFactory.apply
+        </td>
+        <td style="background: #AEF1AE">
+          ObjectFactory.this.SquareFactory.apply(rowIndex, colIndex)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          115
+        </td>
+        <td>
+          727
+          -
+          765
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.SeqLike.size
+        </td>
+        <td style="background: #AEF1AE">
+          BoardFactory.this.rowFactories.head.squareFactories.size
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          116
+        </td>
+        <td>
+          851
+          -
+          865
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.==
+        </td>
+        <td style="background: #AEF1AE">
+          x$1.index.==(row)
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          118
+        </td>
+        <td>
+          833
+          -
+          895
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          BoardFactory.this.rowFactories.find(((x$1: helpers.ObjectFactory.RowFactory) =&gt; x$1.index.==(row))).flatMap[helpers.ObjectFactory.SquareFactory](((x$2: helpers.ObjectFactory.RowFactory) =&gt; x$2.getSquare(column)))
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          117
+        </td>
+        <td>
+          875
+          -
+          894
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ObjectFactory.RowFactory.getSquare
+        </td>
+        <td style="background: #AEF1AE">
+          x$2.getSquare(column)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          119
+        </td>
+        <td>
+          973
+          -
+          986
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ObjectFactory.RowFactory.build
+        </td>
+        <td style="background: #AEF1AE">
+          x$3.build(this)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          121
+        </td>
+        <td>
+          956
+          -
+          987
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.TraversableLike.map
+        </td>
+        <td style="background: #AEF1AE">
+          BoardFactory.this.rowFactories.map[models.Row, Seq[models.Row]](((x$3: helpers.ObjectFactory.RowFactory) =&gt; x$3.build(this)))(collection.this.Seq.canBuildFrom[models.Row])
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          120
+        </td>
+        <td>
+          972
+          -
+          972
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.Seq.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          collection.this.Seq.canBuildFrom[models.Row]
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          122
+        </td>
+        <td>
+          1011
+          -
+          1022
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          models.Board.apply
+        </td>
+        <td style="background: #AEF1AE">
+          models.Board.apply(rows)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          123
+        </td>
+        <td>
+          994
+          -
+          1022
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ObjectFactory.BoardFactory.optimisedBoard_=
+        </td>
+        <td style="background: #AEF1AE">
+          BoardFactory.this.optimisedBoard_=(models.Board.apply(rows))
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          124
+        </td>
+        <td>
+          1119
+          -
+          1133
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ObjectFactory.BoardFactory.optimisedBoard
+        </td>
+        <td style="background: #AEF1AE">
+          BoardFactory.this.optimisedBoard
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          128
+        </td>
+        <td>
+          1185
+          -
+          1247
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.StringContext.s
+        </td>
+        <td style="background: #AEF1AE">
+          scala.StringContext.apply(&quot;{rows: &quot;, &quot;}&quot;).s(BoardFactory.this.rowFactories.mkString(&quot;[\n    &quot;, &quot;,\n    &quot;, &quot;]&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          125
+        </td>
+        <td>
+          1187
+          -
+          1195
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;{rows: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          127
+        </td>
+        <td>
+          1196
+          -
+          1244
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.TraversableOnce.mkString
+        </td>
+        <td style="background: #AEF1AE">
+          BoardFactory.this.rowFactories.mkString(&quot;[\n    &quot;, &quot;,\n    &quot;, &quot;]&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          126
+        </td>
+        <td>
+          1245
+          -
+          1247
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;}&quot;
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          130
+        </td>
+        <td>
+          1386
+          -
+          1431
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IterableLike.find
+        </td>
+        <td style="background: #AEF1AE">
+          RowFactory.this.squareFactories.find(((x$4: helpers.ObjectFactory.SquareFactory) =&gt; x$4.columnIndex.==(column)))
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          129
+        </td>
+        <td>
+          1407
+          -
+          1430
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.==
+        </td>
+        <td style="background: #AEF1AE">
+          x$4.columnIndex.==(column)
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          131
+        </td>
+        <td>
+          1530
+          -
+          1544
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ObjectFactory.SquareFactory.build
+        </td>
+        <td style="background: #AEF1AE">
+          x$5.build(board)
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          133
+        </td>
+        <td>
+          1510
+          -
+          1545
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.TraversableLike.map
+        </td>
+        <td style="background: #AEF1AE">
+          RowFactory.this.squareFactories.map[models.Square, Seq[models.Square]](((x$5: helpers.ObjectFactory.SquareFactory) =&gt; x$5.build(board)))(collection.this.Seq.canBuildFrom[models.Square])
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          132
+        </td>
+        <td>
+          1529
+          -
+          1529
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.Seq.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          collection.this.Seq.canBuildFrom[models.Square]
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          134
+        </td>
+        <td>
+          1556
+          -
+          1561
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ObjectFactory.RowFactory.index
+        </td>
+        <td style="background: #AEF1AE">
+          RowFactory.this.index
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          135
+        </td>
+        <td>
+          1552
+          -
+          1571
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          models.Row.apply
+        </td>
+        <td style="background: #AEF1AE">
+          models.Row.apply(RowFactory.this.index, squares)
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          137
+        </td>
+        <td>
+          1645
+          -
+          1657
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;: squares: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          140
+        </td>
+        <td>
+          1658
+          -
+          1697
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.TraversableOnce.mkString
+        </td>
+        <td style="background: #AEF1AE">
+          RowFactory.this.squareFactories.mkString(&quot;[&quot;, &quot;,&quot;, &quot;]&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          136
+        </td>
+        <td>
+          1631
+          -
+          1640
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;{index: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          139
+        </td>
+        <td>
+          1640
+          -
+          1645
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ObjectFactory.RowFactory.index
+        </td>
+        <td style="background: #AEF1AE">
+          RowFactory.this.index
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          138
+        </td>
+        <td>
+          1698
+          -
+          1700
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;}&quot;
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          141
+        </td>
+        <td>
+          1629
+          -
+          1700
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.StringContext.s
+        </td>
+        <td style="background: #AEF1AE">
+          scala.StringContext.apply(&quot;{index: &quot;, &quot;: squares: &quot;, &quot;}&quot;).s(RowFactory.this.index, RowFactory.this.squareFactories.mkString(&quot;[&quot;, &quot;,&quot;, &quot;]&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          142
+        </td>
+        <td>
+          1938
+          -
+          1944
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.Move.y
+        </td>
+        <td style="background: #AEF1AE">
+          move.y
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          145
+        </td>
+        <td>
+          1946
+          -
+          1980
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.+
+        </td>
+        <td style="background: #AEF1AE">
+          squareFactory.columnIndex.+(move.x)
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          144
+        </td>
+        <td>
+          1974
+          -
+          1980
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.Move.x
+        </td>
+        <td style="background: #AEF1AE">
+          move.x
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          143
+        </td>
+        <td>
+          1913
+          -
+          1944
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.+
+        </td>
+        <td style="background: #AEF1AE">
+          squareFactory.rowIndex.+(move.y)
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          146
+        </td>
+        <td>
+          2005
+          -
+          2044
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ObjectFactory.StepFactory.apply
+        </td>
+        <td style="background: #AEF1AE">
+          ObjectFactory.this.StepFactory.apply(move, square)(boardFactory)
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          147
+        </td>
+        <td>
+          1890
+          -
+          2045
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.map
+        </td>
+        <td style="background: #AEF1AE">
+          boardFactory.getSquare(squareFactory.rowIndex.+(move.y), squareFactory.columnIndex.+(move.x)).map[helpers.ObjectFactory.StepFactory](((square: helpers.ObjectFactory.SquareFactory) =&gt; ObjectFactory.this.StepFactory.apply(move, square)(boardFactory)))
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          149
+        </td>
+        <td>
+          2136
+          -
+          2160
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scala.Option.option2Iterable
+        </td>
+        <td style="background: #AEF1AE">
+          scala.this.Option.option2Iterable[helpers.ObjectFactory.StepFactory](SquareFactory.this.destination(board, this)(move))
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          151
+        </td>
+        <td>
+          2117
+          -
+          2168
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.TraversableOnce.toList
+        </td>
+        <td style="background: #AEF1AE">
+          helpers.Move.validMoves.flatMap[helpers.ObjectFactory.StepFactory, Seq[helpers.ObjectFactory.StepFactory]]({
+  ((move: helpers.Move) =&gt; scala.this.Option.option2Iterable[helpers.ObjectFactory.StepFactory](SquareFactory.this.destination(board, this)(move)))
+})(collection.this.Seq.canBuildFrom[helpers.ObjectFactory.StepFactory]).toList
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          148
+        </td>
+        <td>
+          2136
+          -
+          2160
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ObjectFactory.SquareFactory.destination
+        </td>
+        <td style="background: #AEF1AE">
+          SquareFactory.this.destination(board, this)(move)
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          150
+        </td>
+        <td>
+          2135
+          -
+          2135
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.Seq.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          collection.this.Seq.canBuildFrom[helpers.ObjectFactory.StepFactory]
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          154
+        </td>
+        <td>
+          2240
+          -
+          2282
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.+
+        </td>
+        <td style="background: #AEF1AE">
+          SquareFactory.this.rowIndex.*(board.columnCount).+(SquareFactory.this.columnIndex)
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          153
+        </td>
+        <td>
+          2271
+          -
+          2282
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ObjectFactory.SquareFactory.columnIndex
+        </td>
+        <td style="background: #AEF1AE">
+          SquareFactory.this.columnIndex
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          152
+        </td>
+        <td>
+          2251
+          -
+          2268
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ObjectFactory.BoardFactory.columnCount
+        </td>
+        <td style="background: #AEF1AE">
+          board.columnCount
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          155
+        </td>
+        <td>
+          2296
+          -
+          2304
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ObjectFactory.SquareFactory.rowIndex
+        </td>
+        <td style="background: #AEF1AE">
+          SquareFactory.this.rowIndex
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          158
+        </td>
+        <td>
+          2355
+          -
+          2355
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.List.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          immutable.this.List.canBuildFrom[helpers.Step]
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          160
+        </td>
+        <td>
+          2289
+          -
+          2371
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          models.Square.apply
+        </td>
+        <td style="background: #AEF1AE">
+          models.Square.apply(SquareFactory.this.rowIndex, SquareFactory.this.columnIndex, boardIndex, SquareFactory.this.possibleSteps(board).map[helpers.Step, Seq[helpers.Step]](((x$6: helpers.ObjectFactory.StepFactory) =&gt; x$6.build(this)))(immutable.this.List.canBuildFrom[helpers.Step]))
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          157
+        </td>
+        <td>
+          2356
+          -
+          2369
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ObjectFactory.StepFactory.build
+        </td>
+        <td style="background: #AEF1AE">
+          x$6.build(this)
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          156
+        </td>
+        <td>
+          2306
+          -
+          2317
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ObjectFactory.SquareFactory.columnIndex
+        </td>
+        <td style="background: #AEF1AE">
+          SquareFactory.this.columnIndex
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          159
+        </td>
+        <td>
+          2331
+          -
+          2370
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.immutable.List.map
+        </td>
+        <td style="background: #AEF1AE">
+          SquareFactory.this.possibleSteps(board).map[helpers.Step, Seq[helpers.Step]](((x$6: helpers.ObjectFactory.StepFactory) =&gt; x$6.build(this)))(immutable.this.List.canBuildFrom[helpers.Step])
+        </td>
+      </tr><tr>
+        <td>
+          70
+        </td>
+        <td>
+          164
+        </td>
+        <td>
+          2433
+          -
+          2441
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ObjectFactory.SquareFactory.rowIndex
+        </td>
+        <td style="background: #AEF1AE">
+          SquareFactory.this.rowIndex
+        </td>
+      </tr><tr>
+        <td>
+          70
+        </td>
+        <td>
+          166
+        </td>
+        <td>
+          2429
+          -
+          2457
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.StringContext.s
+        </td>
+        <td style="background: #AEF1AE">
+          scala.StringContext.apply(&quot;{&quot;, &quot;, &quot;, &quot;}&quot;).s(SquareFactory.this.rowIndex, SquareFactory.this.columnIndex)
+        </td>
+      </tr><tr>
+        <td>
+          70
+        </td>
+        <td>
+          163
+        </td>
+        <td>
+          2455
+          -
+          2457
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;}&quot;
+        </td>
+      </tr><tr>
+        <td>
+          70
+        </td>
+        <td>
+          165
+        </td>
+        <td>
+          2444
+          -
+          2455
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ObjectFactory.SquareFactory.columnIndex
+        </td>
+        <td style="background: #AEF1AE">
+          SquareFactory.this.columnIndex
+        </td>
+      </tr><tr>
+        <td>
+          70
+        </td>
+        <td>
+          162
+        </td>
+        <td>
+          2441
+          -
+          2444
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;, &quot;
+        </td>
+      </tr><tr>
+        <td>
+          70
+        </td>
+        <td>
+          161
+        </td>
+        <td>
+          2431
+          -
+          2433
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;{&quot;
+        </td>
+      </tr><tr>
+        <td>
+          75
+        </td>
+        <td>
+          167
+        </td>
+        <td>
+          2611
+          -
+          2633
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ObjectFactory.SquareFactory.rowIndex
+        </td>
+        <td style="background: #AEF1AE">
+          StepFactory.this.squareFactory.rowIndex
+        </td>
+      </tr><tr>
+        <td>
+          75
+        </td>
+        <td>
+          169
+        </td>
+        <td>
+          2662
+          -
+          2674
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ObjectFactory.StepFactory.boardFactory
+        </td>
+        <td style="background: #AEF1AE">
+          StepFactory.this.boardFactory
+        </td>
+      </tr><tr>
+        <td>
+          75
+        </td>
+        <td>
+          168
+        </td>
+        <td>
+          2635
+          -
+          2660
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ObjectFactory.SquareFactory.columnIndex
+        </td>
+        <td style="background: #AEF1AE">
+          StepFactory.this.squareFactory.columnIndex
+        </td>
+      </tr><tr>
+        <td>
+          75
+        </td>
+        <td>
+          170
+        </td>
+        <td>
+          2596
+          -
+          2675
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ObjectFactory.SquareResolver.apply
+        </td>
+        <td style="background: #AEF1AE">
+          ObjectFactory.this.SquareResolver.apply(StepFactory.this.squareFactory.rowIndex, StepFactory.this.squareFactory.columnIndex, StepFactory.this.boardFactory)
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          173
+        </td>
+        <td>
+          2729
+          -
+          2749
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.Step.apply
+        </td>
+        <td style="background: #AEF1AE">
+          Step.apply(StepFactory.this.move, StepFactory.this.resolver)
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          172
+        </td>
+        <td>
+          2740
+          -
+          2748
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ObjectFactory.StepFactory.resolver
+        </td>
+        <td style="background: #AEF1AE">
+          StepFactory.this.resolver
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          171
+        </td>
+        <td>
+          2734
+          -
+          2738
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ObjectFactory.StepFactory.move
+        </td>
+        <td style="background: #AEF1AE">
+          StepFactory.this.move
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          176
+        </td>
+        <td>
+          2872
+          -
+          2929
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.get
+        </td>
+        <td style="background: #AEF1AE">
+          SquareResolver.this.boardFactory.getOptimisedBoard.getSquare(SquareResolver.this.row, SquareResolver.this.column).get
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          175
+        </td>
+        <td>
+          2918
+          -
+          2924
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ObjectFactory.SquareResolver.column
+        </td>
+        <td style="background: #AEF1AE">
+          SquareResolver.this.column
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          174
+        </td>
+        <td>
+          2913
+          -
+          2916
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ObjectFactory.SquareResolver.row
+        </td>
+        <td style="background: #AEF1AE">
+          SquareResolver.this.row
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          182
+        </td>
+        <td>
+          2987
+          -
+          3005
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.StringContext.s
+        </td>
+        <td style="background: #AEF1AE">
+          scala.StringContext.apply(&quot;{&quot;, &quot;, &quot;, &quot;}&quot;).s(SquareResolver.this.row, SquareResolver.this.column)
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          178
+        </td>
+        <td>
+          2994
+          -
+          2997
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;, &quot;
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          181
+        </td>
+        <td>
+          2997
+          -
+          3003
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ObjectFactory.SquareResolver.column
+        </td>
+        <td style="background: #AEF1AE">
+          SquareResolver.this.column
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          180
+        </td>
+        <td>
+          2991
+          -
+          2994
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ObjectFactory.SquareResolver.row
+        </td>
+        <td style="background: #AEF1AE">
+          SquareResolver.this.row
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          177
+        </td>
+        <td>
+          2989
+          -
+          2991
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;{&quot;
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          179
+        </td>
+        <td>
+          3003
+          -
+          3005
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;}&quot;
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          183
+        </td>
+        <td>
+          3086
+          -
+          3135
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ObjectFactory.BoardFactory.getOptimisedBoard
+        </td>
+        <td style="background: #AEF1AE">
+          ObjectFactory.this.boardFactory(tourRequest).build.getOptimisedBoard
+        </td>
+      </tr><tr>
+        <td>
+          96
+        </td>
+        <td>
+          194
+        </td>
+        <td>
+          3225
+          -
+          3453
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ObjectFactory.BoardFactory.apply
+        </td>
+        <td style="background: #AEF1AE">
+          ObjectFactory.this.BoardFactory.apply(scala.Predef.intWrapper(0).until(tourRequest.board.rows).map[helpers.ObjectFactory.RowFactory, Seq[helpers.ObjectFactory.RowFactory]](((rowIndex: Int) =&gt; ObjectFactory.this.RowFactory.apply(rowIndex, scala.Predef.intWrapper(0).until(tourRequest.board.columns).map[helpers.ObjectFactory.SquareFactory, Seq[helpers.ObjectFactory.SquareFactory]](((colIndex: Int) =&gt; ObjectFactory.this.SquareFactory.apply(rowIndex, colIndex)))(immutable.this.IndexedSeq.canBuildFrom[helpers.ObjectFactory.SquareFactory]))))(immutable.this.IndexedSeq.canBuildFrom[helpers.ObjectFactory.RowFactory]))
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          185
+        </td>
+        <td>
+          3253
+          -
+          3275
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.BoardDescription.rows
+        </td>
+        <td style="background: #AEF1AE">
+          tourRequest.board.rows
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          184
+        </td>
+        <td>
+          3245
+          -
+          3246
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          0
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          193
+        </td>
+        <td>
+          3245
+          -
+          3444
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.TraversableLike.map
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.intWrapper(0).until(tourRequest.board.rows).map[helpers.ObjectFactory.RowFactory, Seq[helpers.ObjectFactory.RowFactory]](((rowIndex: Int) =&gt; ObjectFactory.this.RowFactory.apply(rowIndex, scala.Predef.intWrapper(0).until(tourRequest.board.columns).map[helpers.ObjectFactory.SquareFactory, Seq[helpers.ObjectFactory.SquareFactory]](((colIndex: Int) =&gt; ObjectFactory.this.SquareFactory.apply(rowIndex, colIndex)))(immutable.this.IndexedSeq.canBuildFrom[helpers.ObjectFactory.SquareFactory]))))(immutable.this.IndexedSeq.canBuildFrom[helpers.ObjectFactory.RowFactory])
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          192
+        </td>
+        <td>
+          3276
+          -
+          3276
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.IndexedSeq.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          immutable.this.IndexedSeq.canBuildFrom[helpers.ObjectFactory.RowFactory]
+        </td>
+      </tr><tr>
+        <td>
+          98
+        </td>
+        <td>
+          191
+        </td>
+        <td>
+          3302
+          -
+          3444
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ObjectFactory.RowFactory.apply
+        </td>
+        <td style="background: #AEF1AE">
+          ObjectFactory.this.RowFactory.apply(rowIndex, scala.Predef.intWrapper(0).until(tourRequest.board.columns).map[helpers.ObjectFactory.SquareFactory, Seq[helpers.ObjectFactory.SquareFactory]](((colIndex: Int) =&gt; ObjectFactory.this.SquareFactory.apply(rowIndex, colIndex)))(immutable.this.IndexedSeq.canBuildFrom[helpers.ObjectFactory.SquareFactory]))
+        </td>
+      </tr><tr>
+        <td>
+          99
+        </td>
+        <td>
+          187
+        </td>
+        <td>
+          3342
+          -
+          3367
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.BoardDescription.columns
+        </td>
+        <td style="background: #AEF1AE">
+          tourRequest.board.columns
+        </td>
+      </tr><tr>
+        <td>
+          99
+        </td>
+        <td>
+          190
+        </td>
+        <td>
+          3334
+          -
+          3431
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.TraversableLike.map
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.intWrapper(0).until(tourRequest.board.columns).map[helpers.ObjectFactory.SquareFactory, Seq[helpers.ObjectFactory.SquareFactory]](((colIndex: Int) =&gt; ObjectFactory.this.SquareFactory.apply(rowIndex, colIndex)))(immutable.this.IndexedSeq.canBuildFrom[helpers.ObjectFactory.SquareFactory])
+        </td>
+      </tr><tr>
+        <td>
+          99
+        </td>
+        <td>
+          189
+        </td>
+        <td>
+          3368
+          -
+          3368
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.IndexedSeq.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          immutable.this.IndexedSeq.canBuildFrom[helpers.ObjectFactory.SquareFactory]
+        </td>
+      </tr><tr>
+        <td>
+          99
+        </td>
+        <td>
+          186
+        </td>
+        <td>
+          3334
+          -
+          3335
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          0
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          188
+        </td>
+        <td>
+          3398
+          -
+          3431
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ObjectFactory.SquareFactory.apply
+        </td>
+        <td style="background: #AEF1AE">
+          ObjectFactory.this.SquareFactory.apply(rowIndex, colIndex)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

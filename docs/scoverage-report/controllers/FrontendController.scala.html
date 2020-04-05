@@ -1,0 +1,404 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          controllers/FrontendController.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package controllers
+</span>2 <span style=''>
+</span>3 <span style=''>import javax.inject._
+</span>4 <span style=''>
+</span>5 <span style=''>import play.api.Configuration
+</span>6 <span style=''>import play.api.http.HttpErrorHandler
+</span>7 <span style=''>import play.api.mvc._
+</span>8 <span style=''>
+</span>9 <span style=''>/**
+</span>10 <span style=''>  * Frontend controller managing all static resource associate routes.
+</span>11 <span style=''>  * @param assets Assets controller reference.
+</span>12 <span style=''>  * @param cc Controller components reference.
+</span>13 <span style=''>  */
+</span>14 <span style=''>@Singleton
+</span>15 <span style=''>class FrontendController @Inject()(assets: Assets, errorHandler: HttpErrorHandler, config: Configuration, cc: ControllerComponents) extends AbstractController(cc) {
+</span>16 <span style=''>
+</span>17 <span style=''>  def index: Action[AnyContent] = </span><span style='background: #AEF1AE'>assets.at(&quot;index.html&quot;)</span><span style=''>
+</span>18 <span style=''>
+</span>19 <span style=''>  def assetOrDefault(resource: String): Action[AnyContent] = if (</span><span style='background: #AEF1AE'>resource.startsWith(config.get[String](&quot;apiPrefix&quot;))</span><span style=''>){
+</span>20 <span style=''>    </span><span style='background: #AEF1AE'>Action.async(r =&gt; errorHandler.onClientError(r, NOT_FOUND, &quot;Not found&quot;))</span><span style=''>
+</span>21 <span style=''>  } else {
+</span>22 <span style=''>    </span><span style='background: #AEF1AE'>if (resource.contains(&quot;.&quot;)) assets.at(resource) else index</span><span style=''>
+</span>23 <span style=''>  }
+</span>24 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          3
+        </td>
+        <td>
+          520
+          -
+          543
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          controllers.AssetsBuilder.at
+        </td>
+        <td style="background: #AEF1AE">
+          FrontendController.this.assets.at(&quot;index.html&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          5
+        </td>
+        <td>
+          648
+          -
+          648
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          play.api.ConfigLoader.stringLoader
+        </td>
+        <td style="background: #AEF1AE">
+          api.this.ConfigLoader.stringLoader
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          4
+        </td>
+        <td>
+          649
+          -
+          660
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;apiPrefix&quot;
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          7
+        </td>
+        <td>
+          610
+          -
+          662
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.startsWith
+        </td>
+        <td style="background: #AEF1AE">
+          resource.startsWith(FrontendController.this.config.get[String](&quot;apiPrefix&quot;)(api.this.ConfigLoader.stringLoader))
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          6
+        </td>
+        <td>
+          630
+          -
+          661
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          play.api.Configuration.get
+        </td>
+        <td style="background: #AEF1AE">
+          FrontendController.this.config.get[String](&quot;apiPrefix&quot;)(api.this.ConfigLoader.stringLoader)
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          8
+        </td>
+        <td>
+          717
+          -
+          726
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          play.api.http.Status.NOT_FOUND
+        </td>
+        <td style="background: #AEF1AE">
+          FrontendController.this.NOT_FOUND
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          11
+        </td>
+        <td>
+          669
+          -
+          741
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          play.api.mvc.ActionBuilder.async
+        </td>
+        <td style="background: #AEF1AE">
+          FrontendController.this.Action.async(((r: play.api.mvc.Request[play.api.mvc.AnyContent]) =&gt; FrontendController.this.errorHandler.onClientError(r, FrontendController.this.NOT_FOUND, &quot;Not found&quot;)))
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          10
+        </td>
+        <td>
+          687
+          -
+          740
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          play.api.http.HttpErrorHandler.onClientError
+        </td>
+        <td style="background: #AEF1AE">
+          FrontendController.this.errorHandler.onClientError(r, FrontendController.this.NOT_FOUND, &quot;Not found&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          9
+        </td>
+        <td>
+          728
+          -
+          739
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;Not found&quot;
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          12
+        </td>
+        <td>
+          669
+          -
+          741
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          play.api.mvc.ActionBuilder.async
+        </td>
+        <td style="background: #AEF1AE">
+          FrontendController.this.Action.async(((r: play.api.mvc.Request[play.api.mvc.AnyContent]) =&gt; FrontendController.this.errorHandler.onClientError(r, FrontendController.this.NOT_FOUND, &quot;Not found&quot;)))
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          17
+        </td>
+        <td>
+          810
+          -
+          815
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          controllers.FrontendController.index
+        </td>
+        <td style="background: #AEF1AE">
+          FrontendController.this.index
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          14
+        </td>
+        <td>
+          785
+          -
+          804
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          controllers.AssetsBuilder.at
+        </td>
+        <td style="background: #AEF1AE">
+          FrontendController.this.assets.at(resource)
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          13
+        </td>
+        <td>
+          761
+          -
+          783
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.contains
+        </td>
+        <td style="background: #AEF1AE">
+          resource.contains(&quot;.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          16
+        </td>
+        <td>
+          810
+          -
+          815
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          controllers.FrontendController.index
+        </td>
+        <td style="background: #AEF1AE">
+          FrontendController.this.index
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          18
+        </td>
+        <td>
+          757
+          -
+          815
+        </td>
+        <td>
+          If
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          if (resource.contains(&quot;.&quot;))
+  FrontendController.this.assets.at(resource)
+else
+  FrontendController.this.index
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          15
+        </td>
+        <td>
+          785
+          -
+          804
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          controllers.AssetsBuilder.at
+        </td>
+        <td style="background: #AEF1AE">
+          FrontendController.this.assets.at(resource)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

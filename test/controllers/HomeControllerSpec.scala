@@ -51,7 +51,7 @@ class HomeControllerSpec extends Specification with Mockito {
 
     "get the tours for a tourRequest" in new WithApplication {
       val touringService = mock[TouringService]
-      val tourResponse: TourResponse = TourResponse(Seq(Tour(42, 0, 0, List(O))))
+      val tourResponse: TourResponse = TourResponse(Seq(Tour(42, 0, 0, List(O), (4, 2))))
       touringService.getTours(any[TourRequest]()) returns tourResponse
       val controller = new HomeController(stubControllerComponents(), touringService)
 

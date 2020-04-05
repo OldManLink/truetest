@@ -1,32 +1,24 @@
 package helpers
 
-import models.{Board, Square, Tour, TourRequest}
+import models.{Square, TourChunkRequest}
 
-case class TouringHelper(tourRequest: TourRequest) {
+case class TouringHelper(chunkRequest: TourChunkRequest) {
 
-  def getTours: Seq[Tour] = finishedTours match {
+  def getStartSquare: Square = startSquare
+
+  def getTours: Seq[Position] = finishedTours match {
     case Stream() => Nil
-    case stream => (stream take tourRequest.max).toList.zipWithIndex.map { case (pos, id) =>
-      pos.toTour(id, startingSquare)
-    }
+    case stream => stream take chunkRequest.max
   }
 
   def toursStream(position: Position): Stream[Position] = {
-    position.square.possibleSteps.filterNot(stepUnderTest =>
-      position.visited.contains(stepUnderTest.square.boardIndex)).sorted(UnvisitedOrdering(position.visited))
-      .map { nextStep =>
-        val nextSquare = nextStep.square
-        Position(nextSquare, nextStep.move :: position.history, nextSquare.boardIndex :: position.visited )
-      }.toStream
-  }
-
-  case class UnvisitedOrdering(visited: Seq[Int]) extends Ordering[Step] {
-    @Override
-    override def compare(x: Step, y: Step): Int = x.unVisitedSize(visited) compare y.unVisitedSize(visited)
+    position.nextSteps.map { nextStep =>
+      Position(nextStep.square, nextStep.move :: position.history, nextStep.square.boardIndex :: position.visited)
+    }.toStream
   }
 
   def toursFrom(initial: Stream[Position]): Stream[Position] = {
-    if (initial.isEmpty) Stream empty
+    if (initial.isEmpty) Stream.empty
     else {
       val newTours = for {
         position <- initial
@@ -36,19 +28,25 @@ case class TouringHelper(tourRequest: TourRequest) {
     }
   }
 
-  private def getBoard(request: TourRequest): Board = {
-    ObjectFactory.getOptimisedBoard(tourRequest)
+  def isGoodEnd(pos: Position): Boolean = {
+    chunkRequest.chunkIDs.size match {
+      case 4 => true
+      case _ => chunkRequest.chunkIDs.take(2) match {
+        case first :: rest => !first.forbids(pos.coords, rest)
+        case _ => throw new NoSuchElementException("Impossible situation, but this keeps the compiler free from warnings.")
+      }
+    }
   }
 
-  private def getStartingSquare(request: TourRequest): Square = {
-    board.getSquare(request.startingSquare.row, request.startingSquare.column).get
-  }
+  private lazy val board = ObjectFactory.getOptimisedBoard(chunkRequest)
 
-  private lazy val board = getBoard(tourRequest)
+  private lazy val startSquare = board.getSquare(chunkRequest.startSquare.asTuple).get
 
-  private lazy val startingSquare = getStartingSquare(tourRequest)
+  private lazy val startPosition = Position(startSquare, List(chunkRequest.previousMove), List(startSquare.boardIndex))
 
-  private lazy val toursFromStart: Stream[Position] = toursFrom(List(Position(startingSquare, Nil, List(startingSquare.boardIndex))).toStream)
+  private lazy val toursFromStart: Stream[Position] = toursFrom(List(startPosition).toStream)
 
-  private lazy val finishedTours: Stream[Position] = toursFromStart.filter(position => position.completes(board))
+  private lazy val toursWithGoodEnd: Stream[Position] = toursFromStart.filter(isGoodEnd)
+
+  private lazy val finishedTours: Stream[Position] = toursWithGoodEnd.filter(_.completes(board))
 }

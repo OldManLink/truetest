@@ -1,0 +1,1307 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          helpers/TourSearchStrategy.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package helpers
+</span>2 <span style=''>
+</span>3 <span style=''>import models.{Square, Tour, TourChunkRequest, TourRequest}
+</span>4 <span style=''>
+</span>5 <span style=''>trait TourSearchStrategy {
+</span>6 <span style=''>
+</span>7 <span style=''>  def getTours: Seq[Tour]
+</span>8 <span style=''>
+</span>9 <span style=''>  def getFirstTourChunkRequest(tourRequest: TourRequest): TourChunkRequest = </span><span style='background: #AEF1AE'>TourChunkRequest(tourRequest, Move.O, None)</span><span style=''>
+</span>10 <span style=''>
+</span>11 <span style=''>  def toTours(chunk: Seq[Position], startSquare: Square): Seq[Tour] = </span><span style='background: #AEF1AE'>chunk.toList.zipWithIndex
+</span>12 <span style=''></span><span style='background: #AEF1AE'>    .map { case (pos, id) =&gt; pos.toTour(id, startSquare) }</span><span style=''>
+</span>13 <span style=''>}
+</span>14 <span style=''>
+</span>15 <span style=''>case class NaiveStrategy(tourRequest: TourRequest) extends TourSearchStrategy {
+</span>16 <span style=''>
+</span>17 <span style=''>  @Override
+</span>18 <span style=''>  override def getTours: Seq[Tour] = {
+</span>19 <span style=''>    val touringHelper = </span><span style='background: #AEF1AE'>TouringHelper(getFirstTourChunkRequest(tourRequest))</span><span style=''>
+</span>20 <span style=''>    </span><span style='background: #AEF1AE'>toTours(touringHelper.getTours, touringHelper.getStartSquare)</span><span style=''>
+</span>21 <span style=''>  }
+</span>22 <span style=''>}
+</span>23 <span style=''>
+</span>24 <span style=''>case class DivideAndConquerStrategy(tourRequest: TourRequest) extends TourSearchStrategy {
+</span>25 <span style=''>
+</span>26 <span style=''>  @Override
+</span>27 <span style=''>  override def getTours: Seq[Tour] = {
+</span>28 <span style=''>    val firstChunkRequest = </span><span style='background: #AEF1AE'>getFirstTourChunkRequest(tourRequest)</span><span style=''>
+</span>29 <span style=''>    val firstTouringHelper = </span><span style='background: #AEF1AE'>TouringHelper(firstChunkRequest)</span><span style=''>
+</span>30 <span style=''>    </span><span style='background: #AEF1AE'>toTours({
+</span>31 <span style=''></span><span style='background: #AEF1AE'>      for {
+</span>32 <span style=''></span><span style='background: #AEF1AE'>        firstChunk &lt;- firstTouringHelper.getTours
+</span>33 <span style=''></span><span style='background: #AEF1AE'>        secondChunkRequest &lt;- getNextTourChunkRequest(firstChunk, firstChunkRequest)
+</span>34 <span style=''></span><span style='background: #AEF1AE'>        secondChunk &lt;- TouringHelper(secondChunkRequest).getTours.headOption
+</span>35 <span style=''></span><span style='background: #AEF1AE'>        thirdChunkRequest &lt;- getNextTourChunkRequest(secondChunk, secondChunkRequest)
+</span>36 <span style=''></span><span style='background: #AEF1AE'>        thirdChunk &lt;- TouringHelper(thirdChunkRequest).getTours.headOption
+</span>37 <span style=''></span><span style='background: #AEF1AE'>        fourthChunkRequest &lt;- getNextTourChunkRequest(thirdChunk, thirdChunkRequest)
+</span>38 <span style=''></span><span style='background: #AEF1AE'>        fourthChunk &lt;- TouringHelper(fourthChunkRequest).getTours.headOption
+</span>39 <span style=''></span><span style='background: #AEF1AE'>        tour: Position &lt;- assembleChunks(fourthChunkRequest, firstChunk, secondChunk, thirdChunk, fourthChunk)
+</span>40 <span style=''></span><span style='background: #AEF1AE'>      } yield tour
+</span>41 <span style=''></span><span style='background: #AEF1AE'>    }.take(tourRequest.max), startSquare)</span><span style=''>
+</span>42 <span style=''>  }
+</span>43 <span style=''>
+</span>44 <span style=''>  def getNextStep(previousChunk: Position, previousRequest: TourChunkRequest): Step = {
+</span>45 <span style=''>
+</span>46 <span style=''>    // Get current position relative to the full board
+</span>47 <span style=''>    val actualCoords = </span><span style='background: #AEF1AE'>previousRequest.chunkID.toActual(previousChunk.square.asTuple)</span><span style=''>
+</span>48 <span style=''>    val currentSquare = </span><span style='background: #AEF1AE'>fullBoard.getSquare(actualCoords).get</span><span style=''>
+</span>49 <span style=''>
+</span>50 <span style=''>    // Get the visited squares from all the previous chunks
+</span>51 <span style=''>    val totalVisited = </span><span style='background: #AEF1AE'>previousRequest.chunkIDs.flatMap(_.toActual(previousChunk.visited))</span><span style=''>
+</span>52 <span style=''>
+</span>53 <span style=''>    // Get best possible escape direction, using the standard algorithm as the rest of the search
+</span>54 <span style=''>    </span><span style='background: #AEF1AE'>previousChunk.copy(square = currentSquare, visited = totalVisited).nextSteps.head</span><span style=''>
+</span>55 <span style=''>  }
+</span>56 <span style=''>
+</span>57 <span style=''>  def getNextTourChunkRequest(previousChunk: Position, previousRequest: TourChunkRequest): Option[TourChunkRequest] = {
+</span>58 <span style=''>
+</span>59 <span style=''>    val nextStep = </span><span style='background: #AEF1AE'>getNextStep(previousChunk, previousRequest)</span><span style=''>
+</span>60 <span style=''>    </span><span style='background: #AEF1AE'>Some(TourChunkRequest(TourRequest((10, 10), nextStep.square.asTuple, previousRequest.max), nextStep.move, Some(previousRequest)))</span><span style=''>
+</span>61 <span style=''>  }
+</span>62 <span style=''>
+</span>63 <span style=''>  def assembleChunks(lastChunkRequest: TourChunkRequest, first: Position, second: Position, third: Position, fourth: Position): Option[Position] = {
+</span>64 <span style=''>    val lastSquare: Square = </span><span style='background: #AEF1AE'>fullBoard.getSquare(lastChunkRequest.chunkID.toActual(fourth.square.asTuple)).get</span><span style=''>
+</span>65 <span style=''>    </span><span style='background: #AEF1AE'>Some(Position(lastSquare, fourth.history ::: third.history ::: second.history ::: first.history, Nil))</span><span style=''>
+</span>66 <span style=''>  }
+</span>67 <span style=''>
+</span>68 <span style=''>  private lazy val fullBoard = ObjectFactory.boardFactory(tourRequest).build.getOptimisedBoard
+</span>69 <span style=''>  private lazy val startSquare = fullBoard.getSquare(tourRequest.startSquare.asTuple).get
+</span>70 <span style=''>
+</span>71 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          220
+        </td>
+        <td>
+          248
+          -
+          252
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #AEF1AE">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          219
+        </td>
+        <td>
+          240
+          -
+          246
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.Move.O
+        </td>
+        <td style="background: #AEF1AE">
+          Move.O
+        </td>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          221
+        </td>
+        <td>
+          210
+          -
+          253
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          models.TourChunkRequest.apply
+        </td>
+        <td style="background: #AEF1AE">
+          models.TourChunkRequest.apply(tourRequest, Move.O, scala.None)
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          222
+        </td>
+        <td>
+          338
+          -
+          338
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.List.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          immutable.this.List.canBuildFrom[(helpers.Position, Int)]
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          223
+        </td>
+        <td>
+          380
+          -
+          407
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.Position.toTour
+        </td>
+        <td style="background: #AEF1AE">
+          pos.toTour(id, startSquare)
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          225
+        </td>
+        <td>
+          325
+          -
+          409
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.immutable.List.map
+        </td>
+        <td style="background: #AEF1AE">
+          chunk.toList.zipWithIndex[helpers.Position, List[(helpers.Position, Int)]](immutable.this.List.canBuildFrom[(helpers.Position, Int)]).map[models.Tour, Seq[models.Tour]](((x0$1: (helpers.Position, Int)) =&gt; x0$1 match {
+  case (_1: helpers.Position, _2: Int)(helpers.Position, Int)((pos @ _), (id @ _)) =&gt; pos.toTour(id, startSquare)
+}))(immutable.this.List.canBuildFrom[models.Tour])
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          224
+        </td>
+        <td>
+          360
+          -
+          360
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.List.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          immutable.this.List.canBuildFrom[models.Tour]
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          227
+        </td>
+        <td>
+          583
+          -
+          620
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.TourSearchStrategy.getFirstTourChunkRequest
+        </td>
+        <td style="background: #AEF1AE">
+          NaiveStrategy.this.getFirstTourChunkRequest(NaiveStrategy.this.tourRequest)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          226
+        </td>
+        <td>
+          608
+          -
+          619
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.NaiveStrategy.tourRequest
+        </td>
+        <td style="background: #AEF1AE">
+          NaiveStrategy.this.tourRequest
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          228
+        </td>
+        <td>
+          569
+          -
+          621
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.TouringHelper.apply
+        </td>
+        <td style="background: #AEF1AE">
+          TouringHelper.apply(NaiveStrategy.this.getFirstTourChunkRequest(NaiveStrategy.this.tourRequest))
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          229
+        </td>
+        <td>
+          634
+          -
+          656
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.TouringHelper.getTours
+        </td>
+        <td style="background: #AEF1AE">
+          touringHelper.getTours
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          231
+        </td>
+        <td>
+          626
+          -
+          687
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.TourSearchStrategy.toTours
+        </td>
+        <td style="background: #AEF1AE">
+          NaiveStrategy.this.toTours(touringHelper.getTours, touringHelper.getStartSquare)
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          230
+        </td>
+        <td>
+          658
+          -
+          686
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.TouringHelper.getStartSquare
+        </td>
+        <td style="background: #AEF1AE">
+          touringHelper.getStartSquare
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          232
+        </td>
+        <td>
+          891
+          -
+          902
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.DivideAndConquerStrategy.tourRequest
+        </td>
+        <td style="background: #AEF1AE">
+          DivideAndConquerStrategy.this.tourRequest
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          233
+        </td>
+        <td>
+          866
+          -
+          903
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.TourSearchStrategy.getFirstTourChunkRequest
+        </td>
+        <td style="background: #AEF1AE">
+          DivideAndConquerStrategy.this.getFirstTourChunkRequest(DivideAndConquerStrategy.this.tourRequest)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          234
+        </td>
+        <td>
+          933
+          -
+          965
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.TouringHelper.apply
+        </td>
+        <td style="background: #AEF1AE">
+          TouringHelper.apply(firstChunkRequest)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          246
+        </td>
+        <td>
+          970
+          -
+          1698
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.TourSearchStrategy.toTours
+        </td>
+        <td style="background: #AEF1AE">
+          DivideAndConquerStrategy.this.toTours(firstTouringHelper.getTours.flatMap[helpers.Position, Seq[helpers.Position]](((firstChunk: helpers.Position) =&gt; scala.this.Option.option2Iterable[helpers.Position](DivideAndConquerStrategy.this.getNextTourChunkRequest(firstChunk, firstChunkRequest).flatMap[helpers.Position](((secondChunkRequest: models.TourChunkRequest) =&gt; TouringHelper.apply(secondChunkRequest).getTours.headOption.flatMap[helpers.Position](((secondChunk: helpers.Position) =&gt; DivideAndConquerStrategy.this.getNextTourChunkRequest(secondChunk, secondChunkRequest).flatMap[helpers.Position](((thirdChunkRequest: models.TourChunkRequest) =&gt; TouringHelper.apply(thirdChunkRequest).getTours.headOption.flatMap[helpers.Position](((thirdChunk: helpers.Position) =&gt; DivideAndConquerStrategy.this.getNextTourChunkRequest(thirdChunk, thirdChunkRequest).flatMap[helpers.Position](((fourthChunkRequest: models.TourChunkRequest) =&gt; TouringHelper.apply(fourthChunkRequest).getTours.headOption.flatMap[helpers.Position](((fourthChunk: helpers.Position) =&gt; DivideAndConquerStrategy.this.assembleChunks(fourthChunkRequest, firstChunk, secondChunk, thirdChunk, fourthChunk).withFilter(((check$ifrefutable$1: helpers.Position) =&gt; (check$ifrefutable$1: helpers.Position @unchecked) match {
+  case (tour @ (_: helpers.Position)) =&gt; true
+  case _ =&gt; false
+})).map[helpers.Position](((tour: helpers.Position) =&gt; tour)))))))))))))))))(collection.this.Seq.canBuildFrom[helpers.Position]).take(DivideAndConquerStrategy.this.tourRequest.max), DivideAndConquerStrategy.this.startSquare)
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          243
+        </td>
+        <td>
+          1011
+          -
+          1011
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.Seq.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          collection.this.Seq.canBuildFrom[helpers.Position]
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          241
+        </td>
+        <td>
+          1050
+          -
+          1656
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          DivideAndConquerStrategy.this.getNextTourChunkRequest(firstChunk, firstChunkRequest).flatMap[helpers.Position](((secondChunkRequest: models.TourChunkRequest) =&gt; TouringHelper.apply(secondChunkRequest).getTours.headOption.flatMap[helpers.Position](((secondChunk: helpers.Position) =&gt; DivideAndConquerStrategy.this.getNextTourChunkRequest(secondChunk, secondChunkRequest).flatMap[helpers.Position](((thirdChunkRequest: models.TourChunkRequest) =&gt; TouringHelper.apply(thirdChunkRequest).getTours.headOption.flatMap[helpers.Position](((thirdChunk: helpers.Position) =&gt; DivideAndConquerStrategy.this.getNextTourChunkRequest(thirdChunk, thirdChunkRequest).flatMap[helpers.Position](((fourthChunkRequest: models.TourChunkRequest) =&gt; TouringHelper.apply(fourthChunkRequest).getTours.headOption.flatMap[helpers.Position](((fourthChunk: helpers.Position) =&gt; DivideAndConquerStrategy.this.assembleChunks(fourthChunkRequest, firstChunk, secondChunk, thirdChunk, fourthChunk).withFilter(((check$ifrefutable$1: helpers.Position) =&gt; (check$ifrefutable$1: helpers.Position @unchecked) match {
+  case (tour @ (_: helpers.Position)) =&gt; true
+  case _ =&gt; false
+})).map[helpers.Position](((tour: helpers.Position) =&gt; tour))))))))))))))
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          242
+        </td>
+        <td>
+          1050
+          -
+          1656
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          scala.Option.option2Iterable
+        </td>
+        <td style="background: #AEF1AE">
+          scala.this.Option.option2Iterable[helpers.Position](DivideAndConquerStrategy.this.getNextTourChunkRequest(firstChunk, firstChunkRequest).flatMap[helpers.Position](((secondChunkRequest: models.TourChunkRequest) =&gt; TouringHelper.apply(secondChunkRequest).getTours.headOption.flatMap[helpers.Position](((secondChunk: helpers.Position) =&gt; DivideAndConquerStrategy.this.getNextTourChunkRequest(secondChunk, secondChunkRequest).flatMap[helpers.Position](((thirdChunkRequest: models.TourChunkRequest) =&gt; TouringHelper.apply(thirdChunkRequest).getTours.headOption.flatMap[helpers.Position](((thirdChunk: helpers.Position) =&gt; DivideAndConquerStrategy.this.getNextTourChunkRequest(thirdChunk, thirdChunkRequest).flatMap[helpers.Position](((fourthChunkRequest: models.TourChunkRequest) =&gt; TouringHelper.apply(fourthChunkRequest).getTours.headOption.flatMap[helpers.Position](((fourthChunk: helpers.Position) =&gt; DivideAndConquerStrategy.this.assembleChunks(fourthChunkRequest, firstChunk, secondChunk, thirdChunk, fourthChunk).withFilter(((check$ifrefutable$1: helpers.Position) =&gt; (check$ifrefutable$1: helpers.Position @unchecked) match {
+  case (tour @ (_: helpers.Position)) =&gt; true
+  case _ =&gt; false
+})).map[helpers.Position](((tour: helpers.Position) =&gt; tour)))))))))))))))
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          240
+        </td>
+        <td>
+          1135
+          -
+          1656
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          TouringHelper.apply(secondChunkRequest).getTours.headOption.flatMap[helpers.Position](((secondChunk: helpers.Position) =&gt; DivideAndConquerStrategy.this.getNextTourChunkRequest(secondChunk, secondChunkRequest).flatMap[helpers.Position](((thirdChunkRequest: models.TourChunkRequest) =&gt; TouringHelper.apply(thirdChunkRequest).getTours.headOption.flatMap[helpers.Position](((thirdChunk: helpers.Position) =&gt; DivideAndConquerStrategy.this.getNextTourChunkRequest(thirdChunk, thirdChunkRequest).flatMap[helpers.Position](((fourthChunkRequest: models.TourChunkRequest) =&gt; TouringHelper.apply(fourthChunkRequest).getTours.headOption.flatMap[helpers.Position](((fourthChunk: helpers.Position) =&gt; DivideAndConquerStrategy.this.assembleChunks(fourthChunkRequest, firstChunk, secondChunk, thirdChunk, fourthChunk).withFilter(((check$ifrefutable$1: helpers.Position) =&gt; (check$ifrefutable$1: helpers.Position @unchecked) match {
+  case (tour @ (_: helpers.Position)) =&gt; true
+  case _ =&gt; false
+})).map[helpers.Position](((tour: helpers.Position) =&gt; tour))))))))))))
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          239
+        </td>
+        <td>
+          1212
+          -
+          1656
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          DivideAndConquerStrategy.this.getNextTourChunkRequest(secondChunk, secondChunkRequest).flatMap[helpers.Position](((thirdChunkRequest: models.TourChunkRequest) =&gt; TouringHelper.apply(thirdChunkRequest).getTours.headOption.flatMap[helpers.Position](((thirdChunk: helpers.Position) =&gt; DivideAndConquerStrategy.this.getNextTourChunkRequest(thirdChunk, thirdChunkRequest).flatMap[helpers.Position](((fourthChunkRequest: models.TourChunkRequest) =&gt; TouringHelper.apply(fourthChunkRequest).getTours.headOption.flatMap[helpers.Position](((fourthChunk: helpers.Position) =&gt; DivideAndConquerStrategy.this.assembleChunks(fourthChunkRequest, firstChunk, secondChunk, thirdChunk, fourthChunk).withFilter(((check$ifrefutable$1: helpers.Position) =&gt; (check$ifrefutable$1: helpers.Position @unchecked) match {
+  case (tour @ (_: helpers.Position)) =&gt; true
+  case _ =&gt; false
+})).map[helpers.Position](((tour: helpers.Position) =&gt; tour))))))))))
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          238
+        </td>
+        <td>
+          1298
+          -
+          1656
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          TouringHelper.apply(thirdChunkRequest).getTours.headOption.flatMap[helpers.Position](((thirdChunk: helpers.Position) =&gt; DivideAndConquerStrategy.this.getNextTourChunkRequest(thirdChunk, thirdChunkRequest).flatMap[helpers.Position](((fourthChunkRequest: models.TourChunkRequest) =&gt; TouringHelper.apply(fourthChunkRequest).getTours.headOption.flatMap[helpers.Position](((fourthChunk: helpers.Position) =&gt; DivideAndConquerStrategy.this.assembleChunks(fourthChunkRequest, firstChunk, secondChunk, thirdChunk, fourthChunk).withFilter(((check$ifrefutable$1: helpers.Position) =&gt; (check$ifrefutable$1: helpers.Position @unchecked) match {
+  case (tour @ (_: helpers.Position)) =&gt; true
+  case _ =&gt; false
+})).map[helpers.Position](((tour: helpers.Position) =&gt; tour))))))))
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          237
+        </td>
+        <td>
+          1373
+          -
+          1656
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          DivideAndConquerStrategy.this.getNextTourChunkRequest(thirdChunk, thirdChunkRequest).flatMap[helpers.Position](((fourthChunkRequest: models.TourChunkRequest) =&gt; TouringHelper.apply(fourthChunkRequest).getTours.headOption.flatMap[helpers.Position](((fourthChunk: helpers.Position) =&gt; DivideAndConquerStrategy.this.assembleChunks(fourthChunkRequest, firstChunk, secondChunk, thirdChunk, fourthChunk).withFilter(((check$ifrefutable$1: helpers.Position) =&gt; (check$ifrefutable$1: helpers.Position @unchecked) match {
+  case (tour @ (_: helpers.Position)) =&gt; true
+  case _ =&gt; false
+})).map[helpers.Position](((tour: helpers.Position) =&gt; tour))))))
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          236
+        </td>
+        <td>
+          1458
+          -
+          1656
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          TouringHelper.apply(fourthChunkRequest).getTours.headOption.flatMap[helpers.Position](((fourthChunk: helpers.Position) =&gt; DivideAndConquerStrategy.this.assembleChunks(fourthChunkRequest, firstChunk, secondChunk, thirdChunk, fourthChunk).withFilter(((check$ifrefutable$1: helpers.Position) =&gt; (check$ifrefutable$1: helpers.Position @unchecked) match {
+  case (tour @ (_: helpers.Position)) =&gt; true
+  case _ =&gt; false
+})).map[helpers.Position](((tour: helpers.Position) =&gt; tour))))
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          235
+        </td>
+        <td>
+          1535
+          -
+          1656
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.WithFilter.map
+        </td>
+        <td style="background: #AEF1AE">
+          DivideAndConquerStrategy.this.assembleChunks(fourthChunkRequest, firstChunk, secondChunk, thirdChunk, fourthChunk).withFilter(((check$ifrefutable$1: helpers.Position) =&gt; (check$ifrefutable$1: helpers.Position @unchecked) match {
+  case (tour @ (_: helpers.Position)) =&gt; true
+  case _ =&gt; false
+})).map[helpers.Position](((tour: helpers.Position) =&gt; tour))
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          245
+        </td>
+        <td>
+          986
+          -
+          1684
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IterableLike.take
+        </td>
+        <td style="background: #AEF1AE">
+          firstTouringHelper.getTours.flatMap[helpers.Position, Seq[helpers.Position]](((firstChunk: helpers.Position) =&gt; scala.this.Option.option2Iterable[helpers.Position](DivideAndConquerStrategy.this.getNextTourChunkRequest(firstChunk, firstChunkRequest).flatMap[helpers.Position](((secondChunkRequest: models.TourChunkRequest) =&gt; TouringHelper.apply(secondChunkRequest).getTours.headOption.flatMap[helpers.Position](((secondChunk: helpers.Position) =&gt; DivideAndConquerStrategy.this.getNextTourChunkRequest(secondChunk, secondChunkRequest).flatMap[helpers.Position](((thirdChunkRequest: models.TourChunkRequest) =&gt; TouringHelper.apply(thirdChunkRequest).getTours.headOption.flatMap[helpers.Position](((thirdChunk: helpers.Position) =&gt; DivideAndConquerStrategy.this.getNextTourChunkRequest(thirdChunk, thirdChunkRequest).flatMap[helpers.Position](((fourthChunkRequest: models.TourChunkRequest) =&gt; TouringHelper.apply(fourthChunkRequest).getTours.headOption.flatMap[helpers.Position](((fourthChunk: helpers.Position) =&gt; DivideAndConquerStrategy.this.assembleChunks(fourthChunkRequest, firstChunk, secondChunk, thirdChunk, fourthChunk).withFilter(((check$ifrefutable$1: helpers.Position) =&gt; (check$ifrefutable$1: helpers.Position @unchecked) match {
+  case (tour @ (_: helpers.Position)) =&gt; true
+  case _ =&gt; false
+})).map[helpers.Position](((tour: helpers.Position) =&gt; tour)))))))))))))))))(collection.this.Seq.canBuildFrom[helpers.Position]).take(DivideAndConquerStrategy.this.tourRequest.max)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          244
+        </td>
+        <td>
+          1668
+          -
+          1683
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.TourRequest.max
+        </td>
+        <td style="background: #AEF1AE">
+          DivideAndConquerStrategy.this.tourRequest.max
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          247
+        </td>
+        <td>
+          1904
+          -
+          1932
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.Square.asTuple
+        </td>
+        <td style="background: #AEF1AE">
+          previousChunk.square.asTuple
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          248
+        </td>
+        <td>
+          1871
+          -
+          1933
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ChunkID.toActual
+        </td>
+        <td style="background: #AEF1AE">
+          previousRequest.chunkID.toActual(previousChunk.square.asTuple)
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          249
+        </td>
+        <td>
+          1958
+          -
+          1995
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.get
+        </td>
+        <td style="background: #AEF1AE">
+          DivideAndConquerStrategy.this.fullBoard.getSquare(actualCoords).get
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          253
+        </td>
+        <td>
+          2080
+          -
+          2147
+        </td>
+        <td>
+          ApplyToImplicitArgs
+        </td>
+        <td>
+          scala.collection.immutable.List.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          previousRequest.chunkIDs.flatMap[Int, List[Int]](((x$1: helpers.ChunkID) =&gt; x$1.toActual(previousChunk.visited)))(immutable.this.List.canBuildFrom[Int])
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          250
+        </td>
+        <td>
+          2124
+          -
+          2145
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.Position.visited
+        </td>
+        <td style="background: #AEF1AE">
+          previousChunk.visited
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          252
+        </td>
+        <td>
+          2112
+          -
+          2112
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          scala.collection.immutable.List.canBuildFrom
+        </td>
+        <td style="background: #AEF1AE">
+          immutable.this.List.canBuildFrom[Int]
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          251
+        </td>
+        <td>
+          2113
+          -
+          2146
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ChunkID.toActual
+        </td>
+        <td style="background: #AEF1AE">
+          x$1.toActual(previousChunk.visited)
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          254
+        </td>
+        <td>
+          2265
+          -
+          2265
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.Position.copy$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          previousChunk.copy$default$2
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          256
+        </td>
+        <td>
+          2251
+          -
+          2332
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.IterableLike.head
+        </td>
+        <td style="background: #AEF1AE">
+          {
+  &lt;artifact&gt; val x$1: models.Square = currentSquare;
+  &lt;artifact&gt; val x$2: List[Int] @scala.reflect.internal.annotations.uncheckedBounds = totalVisited;
+  &lt;artifact&gt; val x$3: List[helpers.Move] @scala.reflect.internal.annotations.uncheckedBounds = previousChunk.copy$default$2;
+  previousChunk.copy(x$1, x$3, x$2)
+}.nextSteps.head
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          255
+        </td>
+        <td>
+          2251
+          -
+          2317
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.Position.copy
+        </td>
+        <td style="background: #AEF1AE">
+          previousChunk.copy(x$1, x$3, x$2)
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          257
+        </td>
+        <td>
+          2478
+          -
+          2521
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.DivideAndConquerStrategy.getNextStep
+        </td>
+        <td style="background: #AEF1AE">
+          DivideAndConquerStrategy.this.getNextStep(previousChunk, previousRequest)
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          262
+        </td>
+        <td>
+          2617
+          -
+          2630
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.Step.move
+        </td>
+        <td style="background: #AEF1AE">
+          nextStep.move
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          265
+        </td>
+        <td>
+          2526
+          -
+          2655
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Some.apply[models.TourChunkRequest](models.TourChunkRequest.apply(models.TourRequest.apply(scala.Tuple2.apply[Int, Int](10, 10), nextStep.square.asTuple, previousRequest.max), nextStep.move, scala.Some.apply[models.TourChunkRequest](previousRequest)))
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          259
+        </td>
+        <td>
+          2570
+          -
+          2593
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.Square.asTuple
+        </td>
+        <td style="background: #AEF1AE">
+          nextStep.square.asTuple
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          258
+        </td>
+        <td>
+          2560
+          -
+          2568
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Tuple2.apply[Int, Int](10, 10)
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          261
+        </td>
+        <td>
+          2548
+          -
+          2615
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          models.TourRequest.apply
+        </td>
+        <td style="background: #AEF1AE">
+          models.TourRequest.apply(scala.Tuple2.apply[Int, Int](10, 10), nextStep.square.asTuple, previousRequest.max)
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          264
+        </td>
+        <td>
+          2531
+          -
+          2654
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          models.TourChunkRequest.apply
+        </td>
+        <td style="background: #AEF1AE">
+          models.TourChunkRequest.apply(models.TourRequest.apply(scala.Tuple2.apply[Int, Int](10, 10), nextStep.square.asTuple, previousRequest.max), nextStep.move, scala.Some.apply[models.TourChunkRequest](previousRequest))
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          263
+        </td>
+        <td>
+          2632
+          -
+          2653
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Some.apply[models.TourChunkRequest](previousRequest)
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          260
+        </td>
+        <td>
+          2595
+          -
+          2614
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.TourChunkRequest.max
+        </td>
+        <td style="background: #AEF1AE">
+          previousRequest.max
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          268
+        </td>
+        <td>
+          2839
+          -
+          2920
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Option.get
+        </td>
+        <td style="background: #AEF1AE">
+          DivideAndConquerStrategy.this.fullBoard.getSquare(lastChunkRequest.chunkID.toActual(fourth.square.asTuple)).get
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          267
+        </td>
+        <td>
+          2859
+          -
+          2915
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ChunkID.toActual
+        </td>
+        <td style="background: #AEF1AE">
+          lastChunkRequest.chunkID.toActual(fourth.square.asTuple)
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          266
+        </td>
+        <td>
+          2893
+          -
+          2914
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.Square.asTuple
+        </td>
+        <td style="background: #AEF1AE">
+          fourth.square.asTuple
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          271
+        </td>
+        <td>
+          2930
+          -
+          3026
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.Position.apply
+        </td>
+        <td style="background: #AEF1AE">
+          Position.apply(lastSquare, {
+  &lt;synthetic&gt; &lt;artifact&gt; val x$4: List[helpers.Move] = fourth.history;
+  {
+  &lt;synthetic&gt; &lt;artifact&gt; val x$3: List[helpers.Move] = third.history;
+  {
+  &lt;synthetic&gt; &lt;artifact&gt; val x$2: List[helpers.Move] = second.history;
+  first.history.:::[helpers.Move](x$2)
+}.:::[helpers.Move](x$3)
+}.:::[helpers.Move](x$4)
+}, scala.collection.immutable.Nil)
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          270
+        </td>
+        <td>
+          3022
+          -
+          3025
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.Nil
+        </td>
+        <td style="background: #AEF1AE">
+          scala.collection.immutable.Nil
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          272
+        </td>
+        <td>
+          2925
+          -
+          3027
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Some.apply[helpers.Position](Position.apply(lastSquare, {
+  &lt;synthetic&gt; &lt;artifact&gt; val x$4: List[helpers.Move] = fourth.history;
+  {
+  &lt;synthetic&gt; &lt;artifact&gt; val x$3: List[helpers.Move] = third.history;
+  {
+  &lt;synthetic&gt; &lt;artifact&gt; val x$2: List[helpers.Move] = second.history;
+  first.history.:::[helpers.Move](x$2)
+}.:::[helpers.Move](x$3)
+}.:::[helpers.Move](x$4)
+}, scala.collection.immutable.Nil))
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          269
+        </td>
+        <td>
+          2966
+          -
+          3020
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.:::
+        </td>
+        <td style="background: #AEF1AE">
+          {
+  &lt;synthetic&gt; &lt;artifact&gt; val x$3: List[helpers.Move] = third.history;
+  {
+  &lt;synthetic&gt; &lt;artifact&gt; val x$2: List[helpers.Move] = second.history;
+  first.history.:::[helpers.Move](x$2)
+}.:::[helpers.Move](x$3)
+}.:::[helpers.Move](x$4)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

@@ -1,0 +1,333 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          models/TourChunkRequest.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package models
+</span>2 <span style=''>
+</span>3 <span style=''>import helpers.{ChunkID, Move}
+</span>4 <span style=''>import helpers.ChunkID._
+</span>5 <span style=''>
+</span>6 <span style=''>case class TourChunkRequest(tourRequest: TourRequest, previousMove: Move, previousRequest: Option[TourChunkRequest]) {
+</span>7 <span style=''>
+</span>8 <span style=''>  val chunkID: ChunkID = </span><span style='background: #AEF1AE'>ChunkID(tourRequest)</span><span style=''>
+</span>9 <span style=''>  val chunkIDs: List[ChunkID] = </span><span style='background: #AEF1AE'>previousRequest.map(pr =&gt; chunkID :: pr.chunkIDs).getOrElse(List(chunkID))</span><span style=''>
+</span>10 <span style=''>  val startSquare: SquareDescription = </span><span style='background: #AEF1AE'>chunkID.startSquare(tourRequest)</span><span style=''>
+</span>11 <span style=''>  val board: BoardDescription = </span><span style='background: #AEF1AE'>chunkID.getBoard(tourRequest)</span><span style=''>
+</span>12 <span style=''>  val max: Int = </span><span style='background: #AEF1AE'>chunkID</span><span style=''> match {
+</span>13 <span style=''>    case Single =&gt; </span><span style='background: #AEF1AE'>tourRequest.max</span><span style=''>
+</span>14 <span style=''>    case _ =&gt; </span><span style='background: #AEF1AE'>tourRequest.max * 2</span><span style=''> //TODO: figure out how many extras are really needed
+</span>15 <span style=''>  }
+</span>16 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          355
+        </td>
+        <td>
+          218
+          -
+          238
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ChunkID.apply
+        </td>
+        <td style="background: #AEF1AE">
+          helpers.ChunkID.apply(TourChunkRequest.this.tourRequest)
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          354
+        </td>
+        <td>
+          226
+          -
+          237
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.TourChunkRequest.tourRequest
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.tourRequest
+        </td>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          358
+        </td>
+        <td>
+          331
+          -
+          344
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.collection.immutable.List.apply[helpers.ChunkID](TourChunkRequest.this.chunkID)
+        </td>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          357
+        </td>
+        <td>
+          336
+          -
+          343
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.TourChunkRequest.chunkID
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.chunkID
+        </td>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          359
+        </td>
+        <td>
+          271
+          -
+          345
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.getOrElse
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.previousRequest.map[List[helpers.ChunkID]](((pr: models.TourChunkRequest) =&gt; {
+  &lt;synthetic&gt; &lt;artifact&gt; val x$1: helpers.ChunkID = TourChunkRequest.this.chunkID;
+  pr.chunkIDs.::[helpers.ChunkID](x$1)
+})).getOrElse[List[helpers.ChunkID]](scala.collection.immutable.List.apply[helpers.ChunkID](TourChunkRequest.this.chunkID))
+        </td>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          356
+        </td>
+        <td>
+          305
+          -
+          319
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.::
+        </td>
+        <td style="background: #AEF1AE">
+          pr.chunkIDs.::[helpers.ChunkID](x$1)
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          361
+        </td>
+        <td>
+          385
+          -
+          417
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ChunkID.startSquare
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.chunkID.startSquare(TourChunkRequest.this.tourRequest)
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          360
+        </td>
+        <td>
+          405
+          -
+          416
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.TourChunkRequest.tourRequest
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.tourRequest
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          363
+        </td>
+        <td>
+          450
+          -
+          479
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ChunkID.getBoard
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.chunkID.getBoard(TourChunkRequest.this.tourRequest)
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          362
+        </td>
+        <td>
+          467
+          -
+          478
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.TourChunkRequest.tourRequest
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.tourRequest
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          364
+        </td>
+        <td>
+          497
+          -
+          504
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.TourChunkRequest.chunkID
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.chunkID
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          365
+        </td>
+        <td>
+          532
+          -
+          547
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.TourRequest.max
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.tourRequest.max
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          366
+        </td>
+        <td>
+          562
+          -
+          581
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.*
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.tourRequest.max.*(2)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

@@ -1,0 +1,11 @@
+canvas {
+  position:absolute;
+  top:0;
+  left:0;
+  z-index: 100;
+
+  pointer-events: none;
+}
+.Hover {
+  z-index: -1;
+}

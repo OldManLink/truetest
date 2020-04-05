@@ -4,6 +4,8 @@ case class Board(rows: Seq[Row]) {
 
   def getSquare(row: Int, column: Int): Option[Square] = rows.find(_.index == row).flatMap(_.getSquare(column))
 
+  def getSquare(coords: (Int, Int)): Option[Square] = getSquare(coords._1, coords._2)
+
   lazy val squareCount: Int = rows.size * rows.headOption.map(_.squares.size).getOrElse(0)
 
   def hasBlockedSquares: Boolean = rows.exists(_.hasBlockedSquares)

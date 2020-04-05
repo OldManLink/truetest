@@ -11,16 +11,16 @@ export default class Tour extends Component {
     };
     this.getName = this.getName.bind(this);
     this.startTour = this.startTour.bind(this);
-    this.getStartingSquare = this.getStartingSquare.bind(this);
+    this.getStartSquare = this.getStartSquare.bind(this);
   }
 
-  getStartingSquare(){
+  getStartSquare(){
     const tour = this.props.tour;
     return [tour.startRow, tour.startColumn]
   }
 
   getName(){
-    return "Tour [" + this.getStartingSquare() + "] (" + this.props.tour.id + ")";
+    return "Tour [" + this.getStartSquare() + "] (" + this.props.tour.id + ")";
   }
 
   convertMoves(tour) {
@@ -42,7 +42,7 @@ export default class Tour extends Component {
       const nextMove = moves[move];
       const nextSquare = [lastSquare[0] + nextMove.row, lastSquare[1] + nextMove.col];
       return [...accumulator, nextSquare]
-    }, [this.getStartingSquare()]);
+    }, [this.getStartSquare()]);
     return {id, name, squares}
   }
 

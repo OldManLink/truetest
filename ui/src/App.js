@@ -1,15 +1,17 @@
 import React, {Component} from 'react';
 import Api from "./Api";
 import Tour from "./Tour";
+import reactLogo from './images/react.svg'
 
 import Board from "./Board";
 
 import './App.css';
+
 export default class App extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {title: '', tours: [], rows: 5, cols: 5, maxTours: 5, lastTour: undefined};
+    this.state = {title: '', rows: 10, cols: 10, maxTours: 5, tours: [], fetching: false, lastTour: undefined};
     this.getTours = this.getTours.bind(this);
     this.playTourHandler = this.playTourHandler.bind(this);
   }
@@ -36,13 +38,13 @@ export default class App extends Component {
         rows: this.state.rows,
         columns: this.state.cols
       },
-      startingSquare: {
+      startSquare: {
         row: value.row,
         column: value.column
       },
       max: this.state.maxTours
     };
-    this.setState({tours: []});
+    this.setState({tours: [], fetching: true});
     this.refs.board.unPlayTour(this.state.lastTour)
       .then(
         Api.getTours(request, response => {
@@ -66,19 +68,21 @@ export default class App extends Component {
                cols={this.state.cols}
                touringCallback={this.getTours}/>
         {this.state.tours.length === 0
-          ? (
-            <div>Click any square to generate its possible tours.</div>
+          ? (this.state.fetching
+              ? <div>
+                  <div>Fetching, please wait...</div>
+                  <img width="200" height="200" src={reactLogo} className="App-logo" alt="React Logo"/>
+              </div>
+              : <div>Click any square to generate {this.state.maxTours} of its possible tours.</div>
           )
           : (
             <div>
               <div>Click any Tour to (re)play it.</div>
-              <ul>
-                {this.state.tours.map(tour =>
-                  <Tour key={"Tour-" + tour.id}
-                        tour={tour}
-                        touringCallback={this.playTourHandler}/>)
-                }
-              </ul>
+              {this.state.tours.map(tour =>
+                <Tour key={"Tour-" + tour.id}
+                      tour={tour}
+                      touringCallback={this.playTourHandler}/>)
+              }
             </div>)
         }
       </div>

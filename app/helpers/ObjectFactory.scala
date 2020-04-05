@@ -1,17 +1,18 @@
 package helpers
 
+import com.google.common.annotations.VisibleForTesting
 import helpers.Move.validMoves
-import models.{Board, Row, Square, TourRequest}
+import models.{Board, Row, Square, TourChunkRequest, TourRequest}
 
 object ObjectFactory {
 
-  def getOptimisedBoard(tourRequest: TourRequest): Board = boardFactory(tourRequest).build.getOptimisedBoard
+  def getOptimisedBoard(tourChunkRequest: TourChunkRequest): Board = boardFactory(tourChunkRequest).build.getOptimisedBoard
 
-  def boardFactory(tourRequest: TourRequest): BoardFactory = {
+  def boardFactory(tourChunkRequest: TourChunkRequest): BoardFactory = {
     BoardFactory(
-      0 until tourRequest.board.rows map { rowIndex =>
+      0 until tourChunkRequest.board.rows map { rowIndex =>
         RowFactory(
-          rowIndex, 0 until tourRequest.board.columns map { colIndex =>
+          rowIndex, 0 until tourChunkRequest.board.columns map { colIndex =>
             SquareFactory(rowIndex, colIndex)
           })
       })
@@ -85,5 +86,19 @@ object ObjectFactory {
 
     @Override
     override def toString: String = s"{$row, $column}"
+  }
+
+  @VisibleForTesting
+  def getTestBoard(tourRequest: TourRequest): Board = boardFactory(tourRequest).build.getOptimisedBoard
+
+  @VisibleForTesting
+  def boardFactory(tourRequest: TourRequest): BoardFactory = {
+    BoardFactory(
+      0 until tourRequest.board.rows map { rowIndex =>
+        RowFactory(
+          rowIndex, 0 until tourRequest.board.columns map { colIndex =>
+            SquareFactory(rowIndex, colIndex)
+          })
+      })
   }
 }

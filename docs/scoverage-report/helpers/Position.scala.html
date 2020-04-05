@@ -1,0 +1,378 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          helpers/Position.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package helpers
+</span>2 <span style=''>
+</span>3 <span style=''>import models.{Board, Square, Tour}
+</span>4 <span style=''>
+</span>5 <span style=''>case class Position(square: Square, history: List[Move], visited: List[Int] = Nil) {
+</span>6 <span style=''>
+</span>7 <span style=''>  lazy val coords: (Int, Int) = square.asTuple
+</span>8 <span style=''>
+</span>9 <span style=''>  def completes(board: Board): Boolean = {
+</span>10 <span style=''>    </span><span style='background: #AEF1AE'>history.size == board.squareCount</span><span style=''>
+</span>11 <span style=''>  }
+</span>12 <span style=''>
+</span>13 <span style=''>  def nextSteps: Seq[Step] = </span><span style='background: #AEF1AE'>square.possibleSteps.filterNot(step =&gt; visited.contains(step.square.boardIndex))
+</span>14 <span style=''></span><span style='background: #AEF1AE'>    .sorted(UnvisitedOrdering(visited))</span><span style=''>
+</span>15 <span style=''>
+</span>16 <span style=''>  def toTour(id: Int, startSquare: Square): Tour = </span><span style='background: #AEF1AE'>Tour(id, startSquare.rowIndex, startSquare.columnIndex, history.reverse.drop(1), coords)</span><span style=''>
+</span>17 <span style=''>
+</span>18 <span style=''>  case class UnvisitedOrdering(visited: Seq[Int]) extends Ordering[Step] {
+</span>19 <span style=''>    @Override
+</span>20 <span style=''>    override def compare(x: Step, y: Step): Int = </span><span style='background: #AEF1AE'>x.unVisitedSize(visited) compare y.unVisitedSize(visited)</span><span style=''>
+</span>21 <span style=''>  }
+</span>22 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          195
+        </td>
+        <td>
+          235
+          -
+          268
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.==
+        </td>
+        <td style="background: #AEF1AE">
+          Position.this.history.size.==(board.squareCount)
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          196
+        </td>
+        <td>
+          359
+          -
+          381
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.Square.boardIndex
+        </td>
+        <td style="background: #AEF1AE">
+          step.square.boardIndex
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          197
+        </td>
+        <td>
+          342
+          -
+          382
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.LinearSeqOptimized.contains
+        </td>
+        <td style="background: #AEF1AE">
+          Position.this.visited.contains[Int](step.square.boardIndex)
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          200
+        </td>
+        <td>
+          303
+          -
+          423
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.SeqLike.sorted
+        </td>
+        <td style="background: #AEF1AE">
+          Position.this.square.possibleSteps.filterNot(((step: helpers.Step) =&gt; Position.this.visited.contains[Int](step.square.boardIndex))).sorted[helpers.Step](Position.this.UnvisitedOrdering.apply(Position.this.visited))
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          199
+        </td>
+        <td>
+          396
+          -
+          422
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.Position.UnvisitedOrdering.apply
+        </td>
+        <td style="background: #AEF1AE">
+          Position.this.UnvisitedOrdering.apply(Position.this.visited)
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          198
+        </td>
+        <td>
+          414
+          -
+          421
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.Position.visited
+        </td>
+        <td style="background: #AEF1AE">
+          Position.this.visited
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          202
+        </td>
+        <td>
+          507
+          -
+          530
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.Square.columnIndex
+        </td>
+        <td style="background: #AEF1AE">
+          startSquare.columnIndex
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          201
+        </td>
+        <td>
+          485
+          -
+          505
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.Square.rowIndex
+        </td>
+        <td style="background: #AEF1AE">
+          startSquare.rowIndex
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          204
+        </td>
+        <td>
+          476
+          -
+          564
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          models.Tour.apply
+        </td>
+        <td style="background: #AEF1AE">
+          models.Tour.apply(id, startSquare.rowIndex, startSquare.columnIndex, Position.this.history.reverse.drop(1), Position.this.coords)
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          203
+        </td>
+        <td>
+          532
+          -
+          555
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.drop
+        </td>
+        <td style="background: #AEF1AE">
+          Position.this.history.reverse.drop(1)
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          209
+        </td>
+        <td>
+          705
+          -
+          762
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.runtime.OrderedProxy.compare
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Predef.intWrapper(x.unVisitedSize(UnvisitedOrdering.this.visited)).compare(y.unVisitedSize(UnvisitedOrdering.this.visited))
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          205
+        </td>
+        <td>
+          721
+          -
+          728
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.Position.UnvisitedOrdering.visited
+        </td>
+        <td style="background: #AEF1AE">
+          UnvisitedOrdering.this.visited
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          208
+        </td>
+        <td>
+          738
+          -
+          762
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.Step.unVisitedSize
+        </td>
+        <td style="background: #AEF1AE">
+          y.unVisitedSize(UnvisitedOrdering.this.visited)
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          207
+        </td>
+        <td>
+          754
+          -
+          761
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.Position.UnvisitedOrdering.visited
+        </td>
+        <td style="background: #AEF1AE">
+          UnvisitedOrdering.this.visited
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          206
+        </td>
+        <td>
+          705
+          -
+          729
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.Step.unVisitedSize
+        </td>
+        <td style="background: #AEF1AE">
+          x.unVisitedSize(UnvisitedOrdering.this.visited)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

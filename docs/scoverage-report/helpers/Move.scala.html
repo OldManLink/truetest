@@ -1,0 +1,601 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          helpers/Move.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package helpers
+</span>2 <span style=''>
+</span>3 <span style=''>import play.api.libs.json._
+</span>4 <span style=''>import play.api.libs.json.JsError.{apply =&gt; JsError}
+</span>5 <span style=''>
+</span>6 <span style=''>sealed abstract class Move(val code: String, val y: Int, val x: Int) extends Move.Value {
+</span>7 <span style=''>
+</span>8 <span style=''>  @Override
+</span>9 <span style=''>  override def toString: String = </span><span style='background: #AEF1AE'>code</span><span style=''>
+</span>10 <span style=''>}
+</span>11 <span style=''>
+</span>12 <span style=''>object Move extends Enum[Move] {
+</span>13 <span style=''>
+</span>14 <span style=''>  def apply(code: String): Move = </span><span style='background: #AEF1AE'>values.find(m =&gt; m.code == code).getOrElse(O)</span><span style=''>
+</span>15 <span style=''>  def unapply(move: Move): Option[String] = </span><span style='background: #AEF1AE'>Some(move.code)</span><span style=''>
+</span>16 <span style=''>  def validMoves: Seq[Move] = </span><span style='background: #AEF1AE'>values.filterNot(_.equals(O))</span><span style=''>
+</span>17 <span style=''>
+</span>18 <span style=''>  implicit object MoveFormat extends Format[Move] {
+</span>19 <span style=''>    def reads(json: JsValue): JsResult[Move] = json match {
+</span>20 <span style=''>      case JsString(code) =&gt; </span><span style='background: #AEF1AE'>JsSuccess[Move](Move(code))</span><span style=''>
+</span>21 <span style=''>      case _ =&gt; </span><span style='background: #AEF1AE'>JsError(JsonValidationError(&quot;Invalid JSON input found&quot;))</span><span style=''>
+</span>22 <span style=''>    }
+</span>23 <span style=''>    def writes(move: Move): JsValue = </span><span style='background: #AEF1AE'>JsString(move.code)</span><span style=''>
+</span>24 <span style=''>  }
+</span>25 <span style=''>
+</span>26 <span style=''>  val O:  Move = </span><span style='background: #AEF1AE'>new</span><span style=''> Move(&quot;O&quot;,  0,  0){}
+</span>27 <span style=''>  val N:  Move = </span><span style='background: #AEF1AE'>new</span><span style=''> Move(&quot;N&quot;,  3,  0){}
+</span>28 <span style=''>  val NE: Move = </span><span style='background: #AEF1AE'>new</span><span style=''> Move(&quot;NE&quot;, 2,  2){}
+</span>29 <span style=''>  val E:  Move = </span><span style='background: #AEF1AE'>new</span><span style=''> Move(&quot;E&quot;,  0,  3){}
+</span>30 <span style=''>  val SE: Move = </span><span style='background: #AEF1AE'>new</span><span style=''> Move(&quot;SE&quot;,-2,  2){}
+</span>31 <span style=''>  val S:  Move = </span><span style='background: #AEF1AE'>new</span><span style=''> Move(&quot;S&quot;, -3,  0){}
+</span>32 <span style=''>  val SW: Move = </span><span style='background: #AEF1AE'>new</span><span style=''> Move(&quot;SW&quot;,-2, -2){}
+</span>33 <span style=''>  val W:  Move = </span><span style='background: #AEF1AE'>new</span><span style=''> Move(&quot;W&quot;,  0, -3){}
+</span>34 <span style=''>  val NW: Move = </span><span style='background: #AEF1AE'>new</span><span style=''> Move(&quot;NW&quot;, 2, -2){}
+</span>35 <span style=''>}                                  
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          78
+        </td>
+        <td>
+          236
+          -
+          240
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.Move.code
+        </td>
+        <td style="background: #AEF1AE">
+          Move.this.code
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          80
+        </td>
+        <td>
+          355
+          -
+          356
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.Move.O
+        </td>
+        <td style="background: #AEF1AE">
+          Move.this.O
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          79
+        </td>
+        <td>
+          329
+          -
+          343
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.==
+        </td>
+        <td style="background: #AEF1AE">
+          m.code.==(code)
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          81
+        </td>
+        <td>
+          312
+          -
+          357
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.getOrElse
+        </td>
+        <td style="background: #AEF1AE">
+          Move.this.values.find(((m: helpers.Move) =&gt; m.code.==(code))).getOrElse[helpers.Move](Move.this.O)
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          83
+        </td>
+        <td>
+          402
+          -
+          417
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Some.apply[String](move.code)
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          82
+        </td>
+        <td>
+          407
+          -
+          416
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.Move.code
+        </td>
+        <td style="background: #AEF1AE">
+          move.code
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          86
+        </td>
+        <td>
+          448
+          -
+          477
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.TraversableLike.filterNot
+        </td>
+        <td style="background: #AEF1AE">
+          Move.this.values.filterNot(((x$1: helpers.Move) =&gt; x$1.equals(Move.this.O)))
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          85
+        </td>
+        <td>
+          465
+          -
+          476
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.equals
+        </td>
+        <td style="background: #AEF1AE">
+          x$1.equals(Move.this.O)
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          84
+        </td>
+        <td>
+          474
+          -
+          475
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.Move.O
+        </td>
+        <td style="background: #AEF1AE">
+          Move.this.O
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          89
+        </td>
+        <td>
+          620
+          -
+          647
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          play.api.libs.json.JsSuccess.apply
+        </td>
+        <td style="background: #AEF1AE">
+          play.api.libs.json.JsSuccess.apply[helpers.Move](Move.apply(code), play.api.libs.json.JsSuccess.apply$default$2[helpers.Move])
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          88
+        </td>
+        <td>
+          629
+          -
+          629
+        </td>
+        <td>
+          TypeApply
+        </td>
+        <td>
+          play.api.libs.json.JsSuccess.apply$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          play.api.libs.json.JsSuccess.apply$default$2[helpers.Move]
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          87
+        </td>
+        <td>
+          636
+          -
+          646
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.Move.apply
+        </td>
+        <td style="background: #AEF1AE">
+          Move.apply(code)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          91
+        </td>
+        <td>
+          664
+          -
+          720
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          play.api.libs.json.JsError.apply
+        </td>
+        <td style="background: #AEF1AE">
+          play.api.libs.json.JsError.apply(play.api.libs.json.JsonValidationError.apply(&quot;Invalid JSON input found&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          90
+        </td>
+        <td>
+          672
+          -
+          719
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          play.api.libs.json.JsonValidationError.apply
+        </td>
+        <td style="background: #AEF1AE">
+          play.api.libs.json.JsonValidationError.apply(&quot;Invalid JSON input found&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          92
+        </td>
+        <td>
+          774
+          -
+          783
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.Move.code
+        </td>
+        <td style="background: #AEF1AE">
+          move.code
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          93
+        </td>
+        <td>
+          765
+          -
+          784
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          play.api.libs.json.JsString.apply
+        </td>
+        <td style="background: #AEF1AE">
+          play.api.libs.json.JsString.apply(move.code)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          94
+        </td>
+        <td>
+          807
+          -
+          810
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.Move.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          95
+        </td>
+        <td>
+          848
+          -
+          851
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.Move.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          96
+        </td>
+        <td>
+          889
+          -
+          892
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.Move.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          97
+        </td>
+        <td>
+          930
+          -
+          933
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.Move.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          98
+        </td>
+        <td>
+          971
+          -
+          974
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.Move.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          99
+        </td>
+        <td>
+          1012
+          -
+          1015
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.Move.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          100
+        </td>
+        <td>
+          1053
+          -
+          1056
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.Move.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          101
+        </td>
+        <td>
+          1094
+          -
+          1097
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.Move.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          102
+        </td>
+        <td>
+          1135
+          -
+          1138
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.Move.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new $anon()
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>
