@@ -1,0 +1,918 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          models/TourChunkRequest.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package models
+</span>2 <span style=''>
+</span>3 <span style=''>import helpers.ChunkID
+</span>4 <span style=''>import helpers.ChunkID._
+</span>5 <span style=''>
+</span>6 <span style=''>case class TourChunkRequest(tourRequest: TourRequest, previousRequest: Option[TourChunkRequest] = None) {
+</span>7 <span style=''>
+</span>8 <span style=''>  val chunkIDs: List[ChunkID] = </span><span style='background: #AEF1AE'>previousRequest.map(pr =&gt; ChunkID(tourRequest) :: pr.chunkIDs).getOrElse(List(ChunkID(tourRequest)))</span><span style=''>
+</span>9 <span style=''>  val requestBoard: BoardDescription = </span><span style='background: #AEF1AE'>tourRequest.board</span><span style=''>
+</span>10 <span style=''>  val cornerOffsets: (Int, Int) = </span><span style='background: #AEF1AE'>(requestBoard.rows / 2, requestBoard.columns / 2)</span><span style=''>
+</span>11 <span style=''>  val requestSquare: SquareDescription = </span><span style='background: #AEF1AE'>tourRequest.startingSquare</span><span style=''>
+</span>12 <span style=''>  val startSquare: (Int, Int) = </span><span style='background: #AEF1AE'>(startingSquare.row, startingSquare.column)</span><span style=''>
+</span>13 <span style=''>
+</span>14 <span style=''>  def board: BoardDescription = </span><span style='background: #AEF1AE'>chunkIDs head</span><span style=''> match {
+</span>15 <span style=''>    case NullChunk =&gt; </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Invalid chunk - programming error!&quot;)</span><span style=''>
+</span>16 <span style=''>    case Single =&gt; </span><span style='background: #AEF1AE'>requestBoard</span><span style=''>
+</span>17 <span style=''>    case _ =&gt; </span><span style='background: #AEF1AE'>requestBoard copy(rows = requestBoard.rows / 2, columns = requestBoard.columns / 2)</span><span style=''> // One quarter size
+</span>18 <span style=''>  }
+</span>19 <span style=''>
+</span>20 <span style=''>  def startingSquare: SquareDescription = </span><span style='background: #AEF1AE'>chunkIDs head</span><span style=''> match {
+</span>21 <span style=''>    case Single =&gt; </span><span style='background: #AEF1AE'>requestSquare</span><span style=''>
+</span>22 <span style=''>    case BottomLeft =&gt; </span><span style='background: #AEF1AE'>requestSquare</span><span style=''>
+</span>23 <span style=''>    case BottomRight =&gt; </span><span style='background: #AEF1AE'>requestSquare.copy(column = requestSquare.column - cornerOffsets._2)</span><span style=''>
+</span>24 <span style=''>    case TopRight =&gt; </span><span style='background: #AEF1AE'>requestSquare.copy(row = requestSquare.row - cornerOffsets._1, column = requestSquare.column - cornerOffsets._2)</span><span style=''>
+</span>25 <span style=''>    case TopLeft =&gt; </span><span style='background: #AEF1AE'>requestSquare.copy(row = requestSquare.row - cornerOffsets._1)</span><span style=''>
+</span>26 <span style=''>    case _ =&gt; </span><span style='background: #F0ADAD'>throw new IllegalStateException(s&quot;Invalid chunk - $chunkIDs - programming error!&quot;)</span><span style=''>
+</span>27 <span style=''>  }
+</span>28 <span style=''>
+</span>29 <span style=''>  def max: Int = </span><span style='background: #AEF1AE'>chunkIDs head</span><span style=''> match {
+</span>30 <span style=''>    case NullChunk =&gt; </span><span style='background: #F0ADAD'>throw new IllegalStateException(&quot;Invalid chunk - programming error!&quot;)</span><span style=''>
+</span>31 <span style=''>    case Single =&gt; </span><span style='background: #F0ADAD'>tourRequest.max</span><span style=''>
+</span>32 <span style=''>    case _ =&gt; </span><span style='background: #AEF1AE'>10</span><span style=''>
+</span>33 <span style=''>  }
+</span>34 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          295
+        </td>
+        <td>
+          277
+          -
+          303
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.collection.immutable.List.apply[helpers.ChunkID](helpers.ChunkID.apply(TourChunkRequest.this.tourRequest))
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          292
+        </td>
+        <td>
+          251
+          -
+          265
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.::
+        </td>
+        <td style="background: #AEF1AE">
+          pr.chunkIDs.::[helpers.ChunkID](x$1)
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          294
+        </td>
+        <td>
+          282
+          -
+          302
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ChunkID.apply
+        </td>
+        <td style="background: #AEF1AE">
+          helpers.ChunkID.apply(TourChunkRequest.this.tourRequest)
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          293
+        </td>
+        <td>
+          290
+          -
+          301
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.TourChunkRequest.tourRequest
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.tourRequest
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          296
+        </td>
+        <td>
+          204
+          -
+          304
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.getOrElse
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.previousRequest.map[List[helpers.ChunkID]](((pr: models.TourChunkRequest) =&gt; {
+  &lt;synthetic&gt; &lt;artifact&gt; val x$1: helpers.ChunkID = helpers.ChunkID.apply(TourChunkRequest.this.tourRequest);
+  pr.chunkIDs.::[helpers.ChunkID](x$1)
+})).getOrElse[List[helpers.ChunkID]](scala.collection.immutable.List.apply[helpers.ChunkID](helpers.ChunkID.apply(TourChunkRequest.this.tourRequest)))
+        </td>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          297
+        </td>
+        <td>
+          344
+          -
+          361
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.TourRequest.board
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.tourRequest.board
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          298
+        </td>
+        <td>
+          397
+          -
+          418
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int./
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.requestBoard.rows./(2)
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          300
+        </td>
+        <td>
+          396
+          -
+          445
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Tuple2.apply[Int, Int](TourChunkRequest.this.requestBoard.rows./(2), TourChunkRequest.this.requestBoard.columns./(2))
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          299
+        </td>
+        <td>
+          420
+          -
+          444
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int./
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.requestBoard.columns./(2)
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          301
+        </td>
+        <td>
+          487
+          -
+          513
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.TourRequest.startingSquare
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.tourRequest.startingSquare
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          304
+        </td>
+        <td>
+          546
+          -
+          589
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Tuple2.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Tuple2.apply[Int, Int](TourChunkRequest.this.startingSquare.row, TourChunkRequest.this.startingSquare.column)
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          303
+        </td>
+        <td>
+          567
+          -
+          588
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.SquareDescription.column
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.startingSquare.column
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          302
+        </td>
+        <td>
+          547
+          -
+          565
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.SquareDescription.row
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.startingSquare.row
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          305
+        </td>
+        <td>
+          623
+          -
+          636
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.IterableLike.head
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.chunkIDs.head
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          306
+        </td>
+        <td>
+          667
+          -
+          736
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Invalid chunk - programming error!&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          307
+        </td>
+        <td>
+          756
+          -
+          768
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.TourChunkRequest.requestBoard
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.requestBoard
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          310
+        </td>
+        <td>
+          783
+          -
+          866
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          models.BoardDescription.copy
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.requestBoard.copy(TourChunkRequest.this.requestBoard.rows./(2), TourChunkRequest.this.requestBoard.columns./(2))
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          309
+        </td>
+        <td>
+          841
+          -
+          865
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int./
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.requestBoard.columns./(2)
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          308
+        </td>
+        <td>
+          808
+          -
+          829
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int./
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.requestBoard.rows./(2)
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          311
+        </td>
+        <td>
+          934
+          -
+          947
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.IterableLike.head
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.chunkIDs.head
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          312
+        </td>
+        <td>
+          975
+          -
+          988
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.TourChunkRequest.requestSquare
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.requestSquare
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          313
+        </td>
+        <td>
+          1012
+          -
+          1025
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.TourChunkRequest.requestSquare
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.requestSquare
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          316
+        </td>
+        <td>
+          1064
+          -
+          1064
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.SquareDescription.copy$default$1
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.requestSquare.copy$default$1
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          315
+        </td>
+        <td>
+          1078
+          -
+          1117
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.-
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.requestSquare.column.-(TourChunkRequest.this.cornerOffsets._2)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          317
+        </td>
+        <td>
+          1050
+          -
+          1118
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          models.SquareDescription.copy
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.requestSquare.copy(x$2, x$1)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          314
+        </td>
+        <td>
+          1101
+          -
+          1117
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._2
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.cornerOffsets._2
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          322
+        </td>
+        <td>
+          1140
+          -
+          1252
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          models.SquareDescription.copy
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.requestSquare.copy(TourChunkRequest.this.requestSquare.row.-(TourChunkRequest.this.cornerOffsets._1), TourChunkRequest.this.requestSquare.column.-(TourChunkRequest.this.cornerOffsets._2))
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          319
+        </td>
+        <td>
+          1165
+          -
+          1201
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.-
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.requestSquare.row.-(TourChunkRequest.this.cornerOffsets._1)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          318
+        </td>
+        <td>
+          1185
+          -
+          1201
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._1
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.cornerOffsets._1
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          321
+        </td>
+        <td>
+          1212
+          -
+          1251
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.-
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.requestSquare.column.-(TourChunkRequest.this.cornerOffsets._2)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          320
+        </td>
+        <td>
+          1235
+          -
+          1251
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._2
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.cornerOffsets._2
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          325
+        </td>
+        <td>
+          1287
+          -
+          1287
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.SquareDescription.copy$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.requestSquare.copy$default$2
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          324
+        </td>
+        <td>
+          1298
+          -
+          1334
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.-
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.requestSquare.row.-(TourChunkRequest.this.cornerOffsets._1)
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          323
+        </td>
+        <td>
+          1318
+          -
+          1334
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Tuple2._1
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.cornerOffsets._1
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          326
+        </td>
+        <td>
+          1273
+          -
+          1335
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          models.SquareDescription.copy
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.requestSquare.copy(TourChunkRequest.this.requestSquare.row.-(TourChunkRequest.this.cornerOffsets._1), TourChunkRequest.this.requestSquare.copy$default$2)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          327
+        </td>
+        <td>
+          1350
+          -
+          1432
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(scala.StringContext.apply(&quot;Invalid chunk - &quot;, &quot; - programming error!&quot;).s(TourChunkRequest.this.chunkIDs))
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          328
+        </td>
+        <td>
+          1455
+          -
+          1468
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.IterableLike.head
+        </td>
+        <td style="background: #AEF1AE">
+          TourChunkRequest.this.chunkIDs.head
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          329
+        </td>
+        <td>
+          1499
+          -
+          1568
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #F0ADAD">
+          throw new java.lang.IllegalStateException(&quot;Invalid chunk - programming error!&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          330
+        </td>
+        <td>
+          1588
+          -
+          1603
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.TourRequest.max
+        </td>
+        <td style="background: #F0ADAD">
+          TourChunkRequest.this.tourRequest.max
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          331
+        </td>
+        <td>
+          1618
+          -
+          1620
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          10
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

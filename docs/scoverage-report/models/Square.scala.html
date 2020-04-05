@@ -1,0 +1,374 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          models/Square.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package models
+</span>2 <span style=''>
+</span>3 <span style=''>import helpers.Step
+</span>4 <span style=''>
+</span>5 <span style=''>case class Square(rowIndex: Int, columnIndex: Int, boardIndex: Int, possibleSteps: Seq[Step]) {
+</span>6 <span style=''>
+</span>7 <span style=''>  lazy val isBlocked: Boolean = possibleSteps == Nil
+</span>8 <span style=''>
+</span>9 <span style=''>  @Override
+</span>10 <span style=''>  override def toString: String =
+</span>11 <span style=''>    </span><span style='background: #AEF1AE'>s&quot;&quot;&quot;{$rowIndex, $columnIndex, index: $boardIndex steps: ${
+</span>12 <span style=''></span><span style='background: #AEF1AE'>      possibleSteps.mkString(&quot;[&quot;, &quot;,&quot;, &quot;]&quot;)}}&quot;&quot;&quot;</span><span style=''>
+</span>13 <span style=''>}
+</span>14 <span style=''>
+</span>15 <span style=''>object Square {
+</span>16 <span style=''>
+</span>17 <span style=''>  val ORIGIN: Square = </span><span style='background: #AEF1AE'>Square(0, 0, 0, Nil)</span><span style=''>
+</span>18 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          286
+        </td>
+        <td>
+          238
+          -
+          345
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.StringContext.s
+        </td>
+        <td style="background: #AEF1AE">
+          scala.StringContext.apply(&quot;{&quot;, &quot;, &quot;, &quot;, index: &quot;, &quot; steps: &quot;, &quot;}&quot;).s(Square.this.rowIndex, Square.this.columnIndex, Square.this.boardIndex, Square.this.possibleSteps.mkString(&quot;[&quot;, &quot;,&quot;, &quot;]&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          280
+        </td>
+        <td>
+          286
+          -
+          295
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot; steps: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          283
+        </td>
+        <td>
+          255
+          -
+          266
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.Square.columnIndex
+        </td>
+        <td style="background: #AEF1AE">
+          Square.this.columnIndex
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          277
+        </td>
+        <td>
+          242
+          -
+          244
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;{&quot;
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          279
+        </td>
+        <td>
+          266
+          -
+          276
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;, index: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          282
+        </td>
+        <td>
+          244
+          -
+          252
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.Square.rowIndex
+        </td>
+        <td style="background: #AEF1AE">
+          Square.this.rowIndex
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          284
+        </td>
+        <td>
+          276
+          -
+          286
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.Square.boardIndex
+        </td>
+        <td style="background: #AEF1AE">
+          Square.this.boardIndex
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          278
+        </td>
+        <td>
+          252
+          -
+          255
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;, &quot;
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          285
+        </td>
+        <td>
+          303
+          -
+          340
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.TraversableOnce.mkString
+        </td>
+        <td style="background: #AEF1AE">
+          Square.this.possibleSteps.mkString(&quot;[&quot;, &quot;,&quot;, &quot;]&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          281
+        </td>
+        <td>
+          341
+          -
+          345
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;}&quot;
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          289
+        </td>
+        <td>
+          402
+          -
+          403
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          0
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          288
+        </td>
+        <td>
+          399
+          -
+          400
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          0
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          291
+        </td>
+        <td>
+          389
+          -
+          409
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          models.Square.apply
+        </td>
+        <td style="background: #AEF1AE">
+          Square.apply(0, 0, 0, scala.collection.immutable.Nil)
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          290
+        </td>
+        <td>
+          405
+          -
+          408
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.Nil
+        </td>
+        <td style="background: #AEF1AE">
+          scala.collection.immutable.Nil
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          287
+        </td>
+        <td>
+          396
+          -
+          397
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          0
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

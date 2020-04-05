@@ -1,0 +1,334 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          models/Board.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package models
+</span>2 <span style=''>
+</span>3 <span style=''>case class Board(rows: Seq[Row]) {
+</span>4 <span style=''>
+</span>5 <span style=''>  def getSquare(row: Int, column: Int): Option[Square] = </span><span style='background: #AEF1AE'>rows.find(_.index == row).flatMap(_.getSquare(column))</span><span style=''>
+</span>6 <span style=''>
+</span>7 <span style=''>  lazy val squareCount: Int = rows.size * rows.headOption.map(_.squares.size).getOrElse(0)
+</span>8 <span style=''>
+</span>9 <span style=''>  def hasBlockedSquares: Boolean = </span><span style='background: #AEF1AE'>rows.exists(_.hasBlockedSquares)</span><span style=''>
+</span>10 <span style=''>
+</span>11 <span style=''>  def hasUnblockedSquares: Boolean = </span><span style='background: #AEF1AE'>rows.exists(_.hasUnblockedSquares)</span><span style=''>
+</span>12 <span style=''>
+</span>13 <span style=''>@Override
+</span>14 <span style=''>override def toString: String = </span><span style='background: #AEF1AE'>s&quot;&quot;&quot;Board: {rows: ${rows.reverse.mkString(&quot;[\n  &quot;, &quot;,\n  &quot;, &quot;\n]&quot;)}}&quot;&quot;&quot;</span><span style=''>
+</span>15 <span style=''>}
+</span>16 <span style=''>
+</span>17 <span style=''>object Board {
+</span>18 <span style=''>
+</span>19 <span style=''>  val EMPTY: Board = </span><span style='background: #AEF1AE'>Board(Nil)</span><span style=''>
+</span>20 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          5
+        </td>
+        <td>
+          254
+        </td>
+        <td>
+          143
+          -
+          162
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          models.Row.getSquare
+        </td>
+        <td style="background: #AEF1AE">
+          x$2.getSquare(column)
+        </td>
+      </tr><tr>
+        <td>
+          5
+        </td>
+        <td>
+          253
+        </td>
+        <td>
+          119
+          -
+          133
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.==
+        </td>
+        <td style="background: #AEF1AE">
+          x$1.index.==(row)
+        </td>
+      </tr><tr>
+        <td>
+          5
+        </td>
+        <td>
+          255
+        </td>
+        <td>
+          109
+          -
+          163
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          Board.this.rows.find(((x$1: models.Row) =&gt; x$1.index.==(row))).flatMap[models.Square](((x$2: models.Row) =&gt; x$2.getSquare(column)))
+        </td>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          256
+        </td>
+        <td>
+          304
+          -
+          323
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.Row.hasBlockedSquares
+        </td>
+        <td style="background: #AEF1AE">
+          x$4.hasBlockedSquares
+        </td>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          257
+        </td>
+        <td>
+          292
+          -
+          324
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IterableLike.exists
+        </td>
+        <td style="background: #AEF1AE">
+          Board.this.rows.exists(((x$4: models.Row) =&gt; x$4.hasBlockedSquares))
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          259
+        </td>
+        <td>
+          363
+          -
+          397
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IterableLike.exists
+        </td>
+        <td style="background: #AEF1AE">
+          Board.this.rows.exists(((x$5: models.Row) =&gt; x$5.hasUnblockedSquares))
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          258
+        </td>
+        <td>
+          375
+          -
+          396
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.Row.hasUnblockedSquares
+        </td>
+        <td style="background: #AEF1AE">
+          x$5.hasUnblockedSquares
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          262
+        </td>
+        <td>
+          461
+          -
+          507
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.TraversableOnce.mkString
+        </td>
+        <td style="background: #AEF1AE">
+          Board.this.rows.reverse.mkString(&quot;[\n  &quot;, &quot;,\n  &quot;, &quot;\n]&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          261
+        </td>
+        <td>
+          508
+          -
+          512
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;}&quot;
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          263
+        </td>
+        <td>
+          441
+          -
+          512
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.StringContext.s
+        </td>
+        <td style="background: #AEF1AE">
+          scala.StringContext.apply(&quot;Board: {rows: &quot;, &quot;}&quot;).s(Board.this.rows.reverse.mkString(&quot;[\n  &quot;, &quot;,\n  &quot;, &quot;\n]&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          260
+        </td>
+        <td>
+          445
+          -
+          460
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;Board: {rows: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          265
+        </td>
+        <td>
+          553
+          -
+          563
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          models.Board.apply
+        </td>
+        <td style="background: #AEF1AE">
+          Board.apply(scala.collection.immutable.Nil)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          264
+        </td>
+        <td>
+          559
+          -
+          562
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.Nil
+        </td>
+        <td style="background: #AEF1AE">
+          scala.collection.immutable.Nil
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

@@ -1,7 +1,7 @@
 package utils
 
-import helpers.ObjectFactory.getOptimisedBoard
-import models.{Square, TourRequest}
+import helpers.ObjectFactory.getTestBoard
+import models.{Square, TourChunkRequest, TourRequest}
 import org.junit.runner.RunWith
 import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
@@ -16,7 +16,7 @@ class SquareTestingSpec extends Specification with SquareTesting {
     }
 
     "make a blocked version of a square" in {
-      getOptimisedBoard(TourRequest((10, 10), (4, 4), 42))
+      getTestBoard(TourRequest((10, 10), (4, 4), 42))
         .getSquare(4, 2).map(asBlocked) must beSome(Square(4, 2, 42, Nil))
     }
   }

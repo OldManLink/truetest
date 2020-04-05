@@ -1,0 +1,394 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          helpers/ChunkID.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package helpers
+</span>2 <span style=''>
+</span>3 <span style=''>import models.{BoardDescription, TourRequest}
+</span>4 <span style=''>
+</span>5 <span style=''>sealed abstract class ChunkID(val code: String, val forbiddenEnd: Seq[(Int,Int)]) extends ChunkID.Value {
+</span>6 <span style=''>
+</span>7 <span style=''>  def forbids(coords:(Int, Int)): Boolean = </span><span style='background: #AEF1AE'>forbiddenEnd.contains(coords)</span><span style=''>
+</span>8 <span style=''>}
+</span>9 <span style=''>
+</span>10 <span style=''>object ChunkID extends Enum[ChunkID] {
+</span>11 <span style=''>
+</span>12 <span style=''>  def apply(tourRequest: TourRequest): ChunkID = {
+</span>13 <span style=''>    </span><span style='background: #AEF1AE'>tourRequest.board</span><span style=''> match {
+</span>14 <span style=''>      case BoardDescription(5, 5) =&gt; </span><span style='background: #AEF1AE'>Single</span><span style=''>
+</span>15 <span style=''>      case BoardDescription(10,10) =&gt; </span><span style='background: #AEF1AE'>startingQuarter(tourRequest)</span><span style=''>
+</span>16 <span style=''>      case _ =&gt; </span><span style='background: #AEF1AE'>Single</span><span style=''>
+</span>17 <span style=''>    }
+</span>18 <span style=''>  }
+</span>19 <span style=''>
+</span>20 <span style=''>  def startingQuarter(request: TourRequest): ChunkID = {
+</span>21 <span style=''>    // Currently only supports chunks taken from 10 x 10, i.e. 5 x 5 quarters
+</span>22 <span style=''>    ((request.board.rows / 2 - request.startingSquare.row) &gt; 0,
+</span>23 <span style=''>      (request.board.columns / 2 - request.startingSquare.column) &gt; 0
+</span>24 <span style=''>    ) match {
+</span>25 <span style=''>      case (true, true) =&gt; </span><span style='background: #AEF1AE'>BottomLeft</span><span style=''>
+</span>26 <span style=''>      case (true, false) =&gt; </span><span style='background: #AEF1AE'>BottomRight</span><span style=''>
+</span>27 <span style=''>      case (false, true) =&gt; </span><span style='background: #AEF1AE'>TopLeft</span><span style=''>
+</span>28 <span style=''>      case (false, false) =&gt; </span><span style='background: #AEF1AE'>TopRight</span><span style=''>
+</span>29 <span style=''>    }
+</span>30 <span style=''>  }
+</span>31 <span style=''>
+</span>32 <span style=''>  val NullChunk:   ChunkID = </span><span style='background: #AEF1AE'>new</span><span style=''> ChunkID(&quot;Null&quot;,                                 Nil){}
+</span>33 <span style=''>  val Single:      ChunkID = </span><span style='background: #AEF1AE'>new</span><span style=''> ChunkID(&quot;Single&quot;,                               Nil){}
+</span>34 <span style=''>  val TopLeft:     ChunkID = </span><span style='background: #AEF1AE'>new</span><span style=''> ChunkID(&quot;TopLeft&quot;,     Seq((4,0),(4,1),(3,0),(3,1))){}
+</span>35 <span style=''>  val TopRight:    ChunkID = </span><span style='background: #AEF1AE'>new</span><span style=''> ChunkID(&quot;TopRight&quot;,    Seq((4,4),(4,3),(3,4),(3,3))){}
+</span>36 <span style=''>  val BottomLeft:  ChunkID = </span><span style='background: #AEF1AE'>new</span><span style=''> ChunkID(&quot;BottomLeft&quot;,  Seq((0,0),(0,1),(1,0),(1,1))){}
+</span>37 <span style=''>  val BottomRight: ChunkID = </span><span style='background: #AEF1AE'>new</span><span style=''> ChunkID(&quot;BottomRight&quot;, Seq((0,4),(0,3),(1,4),(1,3))){}
+</span>38 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          7
+        </td>
+        <td>
+          33
+        </td>
+        <td>
+          215
+          -
+          244
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.SeqLike.contains
+        </td>
+        <td style="background: #AEF1AE">
+          ChunkID.this.forbiddenEnd.contains[(Int, Int)](coords)
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          34
+        </td>
+        <td>
+          343
+          -
+          360
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          models.TourRequest.board
+        </td>
+        <td style="background: #AEF1AE">
+          tourRequest.board
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          35
+        </td>
+        <td>
+          406
+          -
+          412
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ChunkID.Single
+        </td>
+        <td style="background: #AEF1AE">
+          ChunkID.this.Single
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          36
+        </td>
+        <td>
+          451
+          -
+          479
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ChunkID.startingQuarter
+        </td>
+        <td style="background: #AEF1AE">
+          ChunkID.this.startingQuarter(tourRequest)
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          37
+        </td>
+        <td>
+          496
+          -
+          502
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ChunkID.Single
+        </td>
+        <td style="background: #AEF1AE">
+          ChunkID.this.Single
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          38
+        </td>
+        <td>
+          824
+          -
+          834
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ChunkID.BottomLeft
+        </td>
+        <td style="background: #AEF1AE">
+          ChunkID.this.BottomLeft
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          39
+        </td>
+        <td>
+          863
+          -
+          874
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ChunkID.BottomRight
+        </td>
+        <td style="background: #AEF1AE">
+          ChunkID.this.BottomRight
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          40
+        </td>
+        <td>
+          903
+          -
+          910
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ChunkID.TopLeft
+        </td>
+        <td style="background: #AEF1AE">
+          ChunkID.this.TopLeft
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          41
+        </td>
+        <td>
+          940
+          -
+          948
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          helpers.ChunkID.TopRight
+        </td>
+        <td style="background: #AEF1AE">
+          ChunkID.this.TopRight
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          42
+        </td>
+        <td>
+          989
+          -
+          992
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ChunkID.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          43
+        </td>
+        <td>
+          1077
+          -
+          1080
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ChunkID.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          44
+        </td>
+        <td>
+          1165
+          -
+          1168
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ChunkID.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          45
+        </td>
+        <td>
+          1253
+          -
+          1256
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ChunkID.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          46
+        </td>
+        <td>
+          1341
+          -
+          1344
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ChunkID.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new $anon()
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          47
+        </td>
+        <td>
+          1429
+          -
+          1432
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          helpers.ChunkID.$anon.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new $anon()
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>
