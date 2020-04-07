@@ -6,7 +6,7 @@
 > 
 > Implemented in Play/Scala on the backend and ReactJS on the frontend. Based on the excellent [Scala Play React Seed](http://bit.ly/2A1AzEq) .
  
-![TourDone](https://github.com/OldManLink/truetest/blob/master/docs/03_TourDone.png)
+![RunningTour](https://github.com/OldManLink/truetest/blob/master/docs/05_RunningTour.gif)
 
 ## How to build it?
 
@@ -90,7 +90,7 @@ This will open your browser on the address `http://localhost:3000/` with the fol
 
 ![EmptyBoard](https://github.com/OldManLink/truetest/blob/master/docs/00_EmptyBoard.png)
 
-The board dimensions can be altered by editing `ui/src/App.js` line 12, see the `rows` and `cols` parameters.
+The board dimensions can be altered by editing `ui/src/App.js` line 12, see the `rows` and `cols` parameters. Currently supported dimensions are 5x5 and 10x10.
 
 Click on any board square to fetch a list of possible tours from that square. The list will look like this:
 
@@ -103,6 +103,19 @@ Click on any Tour to se it playback on the board. As each square is visited it t
 ![PlayingTour](https://github.com/OldManLink/truetest/blob/master/docs/02_PlayingTour.png)
 
 The system is quite robust, since it is written in Scala, but with my initial solution any board sizes bigger that 5x5 caused my machine to crash with an [out of memory error](https://github.com/OldManLink/truetest/blob/master/docs/stackTrace.txt). Instead of spending too much time investigating that, I decided to switch to a Divide and Conquer strategy that chops the board up into quarters, solves them, and puts the solutions back together again. This is how the resulting tour can look like: ![TourDone](https://github.com/OldManLink/truetest/blob/master/docs/03_TourDone.png)
+
+### Testing and Test Coverage
+To run the test suite, enter this command:
+```
+sbt test
+```
+
+There is comprehensive test coverage measurement provided by SCoverage. After a successful test suite run, it can be generated with this command:
+```
+sbt coverage test coverageReport
+```
+The test coverage results will be accessible from target/scala-2.12/scoverage-report/index.html
+![Coverage](https://github.com/OldManLink/truetest/blob/master/docs/04_Coverage.png)
 
 
 ### Stop the server and frontend

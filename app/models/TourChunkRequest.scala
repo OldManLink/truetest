@@ -9,8 +9,5 @@ case class TourChunkRequest(tourRequest: TourRequest, previousMove: Move, previo
   val chunkIDs: List[ChunkID] = previousRequest.map(pr => chunkID :: pr.chunkIDs).getOrElse(List(chunkID))
   val startSquare: SquareDescription = chunkID.startSquare(tourRequest)
   val board: BoardDescription = chunkID.getBoard(tourRequest)
-  val max: Int = chunkID match {
-    case Single => tourRequest.max
-    case _ => tourRequest.max * 2 //TODO: figure out how many extras are really needed
-  }
+  val max: Int = tourRequest.max
 }

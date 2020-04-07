@@ -28,12 +28,12 @@ class TouringServiceSpec extends Specification with Mockito {
       tourResponse.tours.size must beEqualTo(552)
     }
 
-    "get 3 tours for a 10x10 board, using the Divide and Conquer strategy" in {
+    "get five tours for a 10x10 board, using the Divide and Conquer strategy" in {
       val touringService = new TouringServiceImpl()
 
-      val tourResponse = touringService.getTours(TourRequest((10, 10), (4, 2), 3))
+      val tourResponse = touringService.getTours(TourRequest((10, 10), (4, 2), 5))
 
-      tourResponse.tours.size must beEqualTo(3)
+      tourResponse.tours.size must beEqualTo(5)
     }
 
     "throw an exception for an unsupported 6x6 board" in {

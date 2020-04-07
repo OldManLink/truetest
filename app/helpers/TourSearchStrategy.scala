@@ -57,7 +57,7 @@ case class DivideAndConquerStrategy(tourRequest: TourRequest) extends TourSearch
   def getNextTourChunkRequest(previousChunk: Position, previousRequest: TourChunkRequest): Option[TourChunkRequest] = {
 
     val nextStep = getNextStep(previousChunk, previousRequest)
-    Some(TourChunkRequest(TourRequest((10, 10), nextStep.square.asTuple, previousRequest.max), nextStep.move, Some(previousRequest)))
+    Some(TourChunkRequest(TourRequest((10, 10), nextStep.square.asTuple), nextStep.move, Some(previousRequest)))
   }
 
   def assembleChunks(lastChunkRequest: TourChunkRequest, first: Position, second: Position, third: Position, fourth: Position): Option[Position] = {

@@ -73,11 +73,14 @@ export default class App extends Component {
                   <div>Fetching, please wait...</div>
                   <img width="200" height="200" src={reactLogo} className="App-logo" alt="React Logo"/>
               </div>
-              : <div>Click any square to generate {this.state.maxTours} of its possible tours.</div>
+              : this.state.title.length === 0
+                 ? null
+                 : <div>Click any square to generate {this.state.maxTours} of its possible tours.</div>
           )
           : (
             <div>
-              <div>Click any Tour to (re)play it.</div>
+              <div>Click any Tour to (re)play it, or click any</div>
+              <div>square above to generate another {this.state.maxTours} tours.</div>
               {this.state.tours.map(tour =>
                 <Tour key={"Tour-" + tour.id}
                       tour={tour}

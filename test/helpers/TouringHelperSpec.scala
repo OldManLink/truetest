@@ -53,7 +53,7 @@ class TouringHelperSpec extends Specification {
       val request = firstRequest
       request.chunkIDs mustEqual List(BottomLeft)
       request.startSquare mustEqual SquareDescription(1, 2)
-      request.max mustEqual 10
+      request.max mustEqual 5
       val touringHelper = TouringHelper(request)
 
       val tours = touringHelper.getTours
@@ -66,7 +66,7 @@ class TouringHelperSpec extends Specification {
       val request = secondRequest
       request.chunkIDs mustEqual List(TopLeft, BottomLeft)
       request.startSquare mustEqual SquareDescription(0, 1)
-      request.max mustEqual 10
+      request.max mustEqual 5
       val touringHelper = TouringHelper(request)
 
       val tours = touringHelper.getTours
@@ -79,7 +79,7 @@ class TouringHelperSpec extends Specification {
       val request = thirdRequest
       request.chunkIDs mustEqual List(TopRight, TopLeft, BottomLeft)
       request.startSquare mustEqual SquareDescription(1, 1)
-      request.max mustEqual 10
+      request.max mustEqual 5
       val touringHelper = TouringHelper(request)
 
       val tours = touringHelper.getTours
@@ -92,7 +92,7 @@ class TouringHelperSpec extends Specification {
       val request = fourthRequest
       request.chunkIDs mustEqual List(BottomRight, TopRight, TopLeft, BottomLeft)
       request.startSquare mustEqual SquareDescription(2, 0)
-      request.max mustEqual 10
+      request.max mustEqual 5
       val touringHelper = TouringHelper(request)
 
       val tours = touringHelper.getTours
